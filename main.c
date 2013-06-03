@@ -4,9 +4,10 @@
 #include "boundary_val.h"
 #include "uvp.h"
 #include "sor.h"
+#include "parallel.h"
 #include <stdio.h>
 
-/* CFD Lab - Worksheet 1 - Group 3
+/* CFD Lab - Worksheet 4 - Group 3
  * Camacho Barranco, Roberto
  * Gavranovic, Stefan
  * Valizadeh, Mahyar
