@@ -133,4 +133,14 @@ void init_uvp(
         }
     }
     
+    /*Initialize corners*/
+    	U[0][0]=0.0;
+    	U[0][jmax+1]=0.0;
+    	U[imax+1][0]=0.0;
+    	U[imax+1][jmax+1]=0.0;
+    	V[0][0]=0.0;
+    	V[0][jmax+1]=0.0;
+    	V[imax+1][0]=0.0;
+    	V[imax+1][jmax+1]=0.0;
+
 }

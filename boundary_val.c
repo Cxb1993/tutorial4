@@ -16,7 +16,7 @@ void boundaryvalues(
     
     int i,j;
     /*Set boundary values along the columns*/
-    for (j = 1; j <= jmax; j++){
+    for (j = 1; j < jmax+1; j++){
         /*U velocities on right and left boundaries*/
         U[0][j] = 0;
         U[imax][j] = 0;
@@ -26,7 +26,7 @@ void boundaryvalues(
     }
     
     /*Set boundary values along the rows*/
-    for (i = 1; i <= imax; i++){
+    for (i = 1; i < imax+1; i++){
         /*V velocities on top and bottom boundaries*/
         V[i][0] = 0;
         V[i][jmax] = 0;
