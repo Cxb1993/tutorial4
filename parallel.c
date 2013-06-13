@@ -178,7 +178,6 @@ void init_parallel(
 }
 
 void pressure_comm( double **P,
-<<<<<<< HEAD
 		int il ,
 		int ir,
 		int jb,
@@ -234,29 +233,7 @@ void pressure_comm( double **P,
 		P[i][jt]= bufRcv[i-il];
 	}
 }
-=======
-                   int il ,
-                   int ir,
-                   int jb,
-                   int jt ,
-                   int rank_l,
-                   int rank_r,
-                   int rank_b,
-                   int rank_t,
-                   double *bufSend,
-                   double *bufRecv,
-                   MPI_Status *status,
-                   int chunk )
 
-{
-    
-    
-    
-    
-    
-    
->>>>>>> 0e8988f912901bcd5a0cbec7315429caa27638ff
-}
 
 void uv_comm(	    double **U,
              double **V,
