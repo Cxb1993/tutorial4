@@ -84,22 +84,35 @@ int main(int argn, char** args){
     int n_div;
     int iproc;
     int jproc;
+    int myrank;
+    int il;
+    int ir;
+    int jb;
+    int jt;
+    int rank_l;
+    int rank_r;
+    int rank_b;
+    int rank_t;
+    int omg_i;
+    int omg_j;
+    int num_proc;
     
     /* read the program configuration file using read_parameters()*/
     read_parameters("cavity100.dat", &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, &iproc, &jproc);
     
     
     MPI_Init( &argc, &argv );                    /* execute n processes      */
-    MPI_Comm_size( MPI_COMM_WORLD, &nproc );     /* asking for the number of processes  */
+    MPI_Comm_size( MPI_COMM_WORLD, num_proc);     /* asking for the number of processes  */
     
+    init_parallel(iproc, jproc, imax, jmax, &myrank, &il, &ir, &jb, &jt, &rank_l, &rank_r, &rank_b, &rank_t, &omg_i, &omg_j, num_proc);
     
     /* set up the matrices (arrays) needed using the matrix() command*/
-    U = matrix(0, imax+1, 0, jmax+1);
-    V = matrix(0, imax+1, 0, jmax+1);
-    P = matrix(0, imax+1, 0, jmax+1);
-    RS = matrix(0, imax+1, 0, jmax+1);
-    F = matrix(0, imax+1, 0, jmax+1);
-    G = matrix(0, imax+1, 0, jmax+1);
+    U = matrix(il-2, ir+1, jb-1, jt+1);
+    V = matrix(il-1, ir+1, jb-2, jt+1);
+    P = matrix(il-1, ir+1, jb-1, jt+1);
+    RS = matrix(il, ir, jb, jt);
+    F = matrix(il-2, ir+1, jb-1, jt+1);
+    G = matrix(il-1, ir+1, jb-2, jt+1);
     
     /* initialize current time and time step*/
     t = 0;
@@ -149,13 +162,14 @@ int main(int argn, char** args){
         
     }
     
-    
     /* Destroy memory allocated*/
-    free_matrix(U, 0, imax+1, 0, jmax+1);
-    free_matrix(V, 0, imax+1, 0, jmax+1);
-    free_matrix(P, 0, imax+1, 0, jmax+1);
-    free_matrix(RS, 0, imax+1, 0, jmax+1);
-    free_matrix(F, 0, imax+1, 0, jmax+1);
-    free_matrix(G, 0, imax+1, 0, jmax+1);
+    free_matrix(U, il-2, ir+1, jb-1, jt+1);
+    free_matrix(V, il-1, ir+1, jb-2, jt+1);
+    free_matrix(P, il-1, ir+1, jb-1, jt+1);
+    free_matrix(RS, il, ir, jb, jt);
+    free_matrix(F, il-2, ir+1, jb-1, jt+1);
+    free_matrix(G, il-1, ir+1, jb-2, jt+1);
+    Programm_Stop("finished its work");
+    MPI_Finalize();
     return -1;
 }

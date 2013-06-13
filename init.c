@@ -92,7 +92,7 @@ int read_parameters( const char *szFileName,       /* name of the file */
     READ_DOUBLE( szFileName, *GX );
     READ_DOUBLE( szFileName, *GY );
     READ_DOUBLE( szFileName, *PI );
-
+    
     READ_INT   ( szFileName, *iproc );
     READ_INT   ( szFileName, *jproc );
     
@@ -139,13 +139,13 @@ void init_uvp(
     }
     
     /*Initialize corners*/
-    	U[0][0]=0.0;
-    	U[0][jmax+1]=0.0;
-    	U[imax+1][0]=0.0;
-    	U[imax+1][jmax+1]=0.0;
-    	V[0][0]=0.0;
-    	V[0][jmax+1]=0.0;
-    	V[imax+1][0]=0.0;
-    	V[imax+1][jmax+1]=0.0;
-
+    U[0][0]=0.0;
+    U[0][jmax+1]=0.0;
+    U[imax+1][0]=0.0;
+    U[imax+1][jmax+1]=0.0;
+    V[0][0]=0.0;
+    V[0][jmax+1]=0.0;
+    V[imax+1][0]=0.0;
+    V[imax+1][jmax+1]=0.0;
+    
 }

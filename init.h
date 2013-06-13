@@ -23,7 +23,7 @@
  * @param ylength    domain lenght y-direction
  * @param dt         time step length: dividing t_end by dt gives the number of
  *                   time steps to perform. Actually dt is determined by a
- *                   function, so manipulating this value within the 
+ *                   function, so manipulating this value within the
  *                   configuration file should not affect the solution process
  *                   at all
  * @param dx         cell length x-direction
@@ -38,45 +38,45 @@
  * @param dt_value   time steps for output (after how many time steps one should
  *                   write into the output file)
  */
-int read_parameters( 
-  const char *szFileName,
-  double *Re,
-  double *UI,
-  double *VI,
-  double *PI,
-  double *GX,
-  double *GY,
-  double *t_end,
-  double *xlength,
-  double *ylength,
-  double *dt,
-  double *dx,
-  double *dy,
-  int  *imax,
-  int  *jmax,
-  double *alpha,
-  double *omg,
-  double *tau,
-  int  *itermax,
-  double *eps,
-  double *dt_value,
-  int *iproc,
-  int *jproc);
+int read_parameters(
+                    const char *szFileName,
+                    double *Re,
+                    double *UI,
+                    double *VI,
+                    double *PI,
+                    double *GX,
+                    double *GY,
+                    double *t_end,
+                    double *xlength,
+                    double *ylength,
+                    double *dt,
+                    double *dx,
+                    double *dy,
+                    int  *imax,
+                    int  *jmax,
+                    double *alpha,
+                    double *omg,
+                    double *tau,
+                    int  *itermax,
+                    double *eps,
+                    double *dt_value,
+                    int *iproc,
+                    int *jproc);
 
 /**
  * The arrays U,V and P are initialized to the constant values UI, VI and PI on
  * the whole domain.
  */
 void init_uvp(
-  double UI,
-  double VI,
-  double PI,
-  int imax,
-  int jmax,
-  double **U,
-  double **V,
-  double **P
-);
+              double UI,
+              double VI,
+              double PI,
+              int imax,
+              int jmax,
+              double **U,
+              double **V,
+              double **P
+              );
 
 #endif
 
