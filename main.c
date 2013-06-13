@@ -84,6 +84,11 @@ int main(int argn, char** args){
     /* read the program configuration file using read_parameters()*/
     read_parameters("cavity100.dat", &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value);
     
+    
+    MPI_Init( &argc, &argv );                    /* execute n processes      */
+    MPI_Comm_size( MPI_COMM_WORLD, &nproc );     /* asking for the number of processes  */
+    
+    
     /* set up the matrices (arrays) needed using the matrix() command*/
     U = matrix(0, imax+1, 0, jmax+1);
     V = matrix(0, imax+1, 0, jmax+1);
