@@ -178,6 +178,63 @@ void init_parallel(
 }
 
 void pressure_comm( double **P,
+<<<<<<< HEAD
+		int il ,
+		int ir,
+		int jb,
+		int jt ,
+		int rank_l,
+		int rank_r,
+		int rank_b,
+		int rank_t,
+		double *bufSend,
+		double *bufRecv,
+		MPI_Status *status,
+		int chunk )
+{
+	int i, j;
+
+	/*Send to the left*/
+	for(j = jb, j<=jt, j++){
+		bufSend[j-jb]=P[il][j];
+	}
+	MPI_Sendrecv(bufSend, jt-jb+1, MPI_DOUBLE, rank_l, 1, bufRcv, jt-jb+1, MPI_DOUBLE, rank_r, 1, MPI_COMM_WORLD, status);
+	/*Receive from the right*/
+	for(j = jb, j<=jt, j++){
+		P[ir][j]= bufRcv[j-jb];
+	}
+
+	/*Send to the right*/
+	for(j = jb, j<=jt, j++){
+		bufSend[j-jb]=P[ir][j];
+	}
+	MPI_Sendrecv(bufSend, jt-jb+1, MPI_DOUBLE, rank_r, 1, bufRcv, jt-jb+1, MPI_DOUBLE, rank_l, 1, MPI_COMM_WORLD, status);
+	/*Receive from the left*/
+	for(j = jb, j<=jt, j++){
+		P[il][j]= bufRcv[j-jb];
+	}
+
+	/*Send to the top*/
+	for(i = il, i<=ir, i++){
+		bufSend[i-il]=P[i][jt];
+	}
+	MPI_Sendrecv(bufSend, ir-il+1, MPI_DOUBLE, rank_t, 1, bufRcv, ir-il+1, MPI_DOUBLE, rank_b, 1, MPI_COMM_WORLD, status);
+	/*Receive from the bottom*/
+	for(i = il, i<=ir, i++){
+		P[i][jb]= bufRcv[i-il];
+	}
+
+	/*Send to the bottom*/
+	for(i = il, i<=ir, i++){
+		bufSend[i-il]=P[i][jb];
+	}
+	MPI_Sendrecv(bufSend, ir-il+1, MPI_DOUBLE, rank_b, 1, bufRcv, ir-il+1, MPI_DOUBLE, rank_t, 1, MPI_COMM_WORLD, status);
+	/*Receive from the bottom*/
+	for(i = il, i<=ir, i++){
+		P[i][jt]= bufRcv[i-il];
+	}
+}
+=======
                    int il ,
                    int ir,
                    int jb,
@@ -198,6 +255,7 @@ void pressure_comm( double **P,
     
     
     
+>>>>>>> 0e8988f912901bcd5a0cbec7315429caa27638ff
 }
 
 void uv_comm(	    double **U,
