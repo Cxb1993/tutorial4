@@ -197,7 +197,7 @@ void pressure_comm( double **P,
 	for(j = jb, j<=jt, j++){
 		bufSend[j-jb]=P[il][j];
 	}
-	MPI_Sendrecv(bufSend, jt-jb+1, MPI_DOUBLE, rank_l, 1, bufRcv, jt-jb+1, MPI_DOUBLE, rank_r, 1, MPI_COMM_WORLD, status);
+	MPI_Sendrecv(bufSend, chunk, MPI_DOUBLE, rank_l, 1, bufRcv, chunk, MPI_DOUBLE, rank_r, 1, MPI_COMM_WORLD, status);
 	/*Receive from the right*/
 	for(j = jb, j<=jt, j++){
 		P[ir][j]= bufRcv[j-jb];
@@ -207,7 +207,7 @@ void pressure_comm( double **P,
 	for(j = jb, j<=jt, j++){
 		bufSend[j-jb]=P[ir][j];
 	}
-	MPI_Sendrecv(bufSend, jt-jb+1, MPI_DOUBLE, rank_r, 1, bufRcv, jt-jb+1, MPI_DOUBLE, rank_l, 1, MPI_COMM_WORLD, status);
+	MPI_Sendrecv(bufSend, chunk, MPI_DOUBLE, rank_r, 1, bufRcv, chunk, MPI_DOUBLE, rank_l, 1, MPI_COMM_WORLD, status);
 	/*Receive from the left*/
 	for(j = jb, j<=jt, j++){
 		P[il][j]= bufRcv[j-jb];
@@ -217,7 +217,7 @@ void pressure_comm( double **P,
 	for(i = il, i<=ir, i++){
 		bufSend[i-il]=P[i][jt];
 	}
-	MPI_Sendrecv(bufSend, ir-il+1, MPI_DOUBLE, rank_t, 1, bufRcv, ir-il+1, MPI_DOUBLE, rank_b, 1, MPI_COMM_WORLD, status);
+	MPI_Sendrecv(bufSend, chunk, MPI_DOUBLE, rank_t, 1, bufRcv, chunk, MPI_DOUBLE, rank_b, 1, MPI_COMM_WORLD, status);
 	/*Receive from the bottom*/
 	for(i = il, i<=ir, i++){
 		P[i][jb]= bufRcv[i-il];
@@ -227,7 +227,7 @@ void pressure_comm( double **P,
 	for(i = il, i<=ir, i++){
 		bufSend[i-il]=P[i][jb];
 	}
-	MPI_Sendrecv(bufSend, ir-il+1, MPI_DOUBLE, rank_b, 1, bufRcv, ir-il+1, MPI_DOUBLE, rank_t, 1, MPI_COMM_WORLD, status);
+	MPI_Sendrecv(bufSend, chunk, MPI_DOUBLE, rank_b, 1, bufRcv, chunk, MPI_DOUBLE, rank_t, 1, MPI_COMM_WORLD, status);
 	/*Receive from the bottom*/
 	for(i = il, i<=ir, i++){
 		P[i][jt]= bufRcv[i-il];
