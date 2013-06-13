@@ -6,6 +6,8 @@
 #include "sor.h"
 #include "parallel.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <mpi.h>
 
 /* CFD Lab - Worksheet 4 - Group 3
  * Camacho Barranco, Roberto
@@ -80,9 +82,11 @@ int main(int argn, char** args){
     double **RS;		/* right-hand side for pressure iteration*/
     double **F,**G;		/* F;G*/
     int n_div;
+    int iproc;
+    int jproc;
     
     /* read the program configuration file using read_parameters()*/
-    read_parameters("cavity100.dat", &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value);
+    read_parameters("cavity100.dat", &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, &iproc, &jproc);
     
     
     MPI_Init( &argc, &argv );                    /* execute n processes      */

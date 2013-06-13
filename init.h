@@ -59,8 +59,9 @@ int read_parameters(
   double *tau,
   int  *itermax,
   double *eps,
-  double *dt_value
-);
+  double *dt_value,
+  int *iproc,
+  int *jproc);
 
 /**
  * The arrays U,V and P are initialized to the constant values UI, VI and PI on
