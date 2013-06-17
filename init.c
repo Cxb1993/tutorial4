@@ -115,8 +115,10 @@ void init_uvp(
               double UI,
               double VI,
               double PI,
-              int imax,
-              int jmax,
+              int il,
+              int ir,
+              int jb,
+              int jt,
               double **U,
               double **V,
               double **P
@@ -126,26 +128,22 @@ void init_uvp(
     int i;
     int j;
     
-    for ( i = 1 ; i<= imax;  i++ )
+    for ( i = il-2 ; i<= ir+1;  i++ )
     {
-        for (j = 1; j<= jmax; j++ )
+        for (j = jb-2; j<= jt+1; j++ )
         {
-            
-            U[i][j] = UI ;
-            V[i][j] = VI ;
-            P[i][j] = PI ;
-            
+            if (i == il-2) {
+                U[i][j] = UI ;
+            }
+            if else (j == jb-2){
+                V[i][j] = VI ;
+            }
+            else{
+                U[i][j] = UI ;
+                V[i][j] = VI ;
+                P[i][j] = PI ;
+            }
         }
     }
-    
-    /*Initialize corners*/
-    U[0][0]=0.0;
-    U[0][jmax+1]=0.0;
-    U[imax+1][0]=0.0;
-    U[imax+1][jmax+1]=0.0;
-    V[0][0]=0.0;
-    V[0][jmax+1]=0.0;
-    V[imax+1][0]=0.0;
-    V[imax+1][jmax+1]=0.0;
     
 }

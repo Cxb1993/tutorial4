@@ -119,9 +119,10 @@ int main(int argn, char** args){
     n = 0;
     
     /* create the initial setup init_uvp()*/
-    init_uvp(UI, VI, PI, imax, jmax, U, V, P);
+    init_uvp(UI, VI, PI,  il, ir, jb, jt, U, V, P);
     
     
+    // il, ir, jb, jt, omg_i, omg_j
     /* ----------------------------------------------------------------------- */
     /*                             Performing the main loop                    */
     /* ----------------------------------------------------------------------- */
