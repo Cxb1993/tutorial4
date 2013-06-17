@@ -6,7 +6,7 @@ void Program_Message(char *txt)
 
 {
 	int myrank;
-    
+
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	fprintf(stderr,"-MESSAGE- P:%2d : %s\n",myrank,txt);
 	fflush(stdout);
@@ -19,7 +19,7 @@ void Programm_Sync(char *txt)
 
 {
 	int myrank;
-    
+
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Barrier(MPI_COMM_WORLD);                             /* synchronize output */
 	fprintf(stderr,"-MESSAGE- P:%2d : %s\n",myrank,txt);
@@ -34,7 +34,7 @@ void Programm_Stop(char *txt)
 
 {
 	int myrank;
-    
+
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Barrier(MPI_COMM_WORLD);                           /* synchronize output */
 	fprintf(stderr,"-STOP- P:%2d : %s\n",myrank,txt);
@@ -46,31 +46,31 @@ void Programm_Stop(char *txt)
 }
 
 void init_parallel(
-                   int iproc,			/*number of processes in i direction*/
-                   int jproc,			  /*number of processes in j direction*/
-                   int imax,			/*maximal number of grid points in i direction*/
-                   int jmax,			/*maximal number of grid points in j direction*/
-                   int *myrank,		/*integer denoting ID of the process*/
-                   int *il,			/*left most point in i direction in subdomain omega */
-                   int *ir,
-                   int *jb,
-                   int *jt,
-                   int *rank_l,
-                   int *rank_r,
-                   int *rank_b,
-                   int *rank_t,
-                   int *omg_i,
-                   int *omg_j,
-                   int num_proc)
+		int iproc,			/*number of processes in i direction*/
+		int jproc,			  /*number of processes in j direction*/
+		int imax,			/*maximal number of grid points in i direction*/
+		int jmax,			/*maximal number of grid points in j direction*/
+		int *myrank,		/*integer denoting ID of the process*/
+		int *il,			/*left most point in i direction in subdomain omega */
+		int *ir,
+		int *jb,
+		int *jt,
+		int *rank_l,
+		int *rank_r,
+		int *rank_b,
+		int *rank_t,
+		int *omg_i,
+		int *omg_j,
+		int num_proc)
 {
-    
+
 	int i ;
 	int t_il, t_ir, t_jb, t_jt, t_omg_i, t_omg_j, t_rank_l, t_rank_r, t_rank_b, t_rank_t;
 	int res_i, res_j;
 	MPI_Status status;
-    
+
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank) ;
-    
+
 	if (myrank == 0 ) {
 		res_i = imax % iproc;
 		res_j = jmax % jproc;
@@ -98,7 +98,7 @@ void init_parallel(
 		rank_r = myrank + 1 ;
 		rank_t = myrank + iproc;
 		rank_b = MPI_PROC_NULL ;
-        
+
 		for (i = 1; i < num_proc; ++i) {
 			t_omg_i= (i%iproc) + 1;
 			t_omg_j = (i/iproc) + 1;
@@ -121,33 +121,33 @@ void init_parallel(
 				t_jt = imax/iproc * t_omg_i-1;
 			}
 			switch (t_omg_i) {
-                case 1:
-                    t_rank_l = MPI_PROC_NULL ;
-                    t_rank_r = i + 1 ;
-                    break;
-                case iproc:
-                    t_rank_r =  MPI_PROC_NULL ;
-                    t_rank_l = i - 1 ;
-                    break ;
-                default:
-                    t_rank_r = i + 1 ;
-                    t_rank_l = i - 1 ;
-                    break;
+			case 1:
+				t_rank_l = MPI_PROC_NULL ;
+				t_rank_r = i + 1 ;
+				break;
+			case iproc:
+				t_rank_r =  MPI_PROC_NULL ;
+				t_rank_l = i - 1 ;
+				break ;
+			default:
+				t_rank_r = i + 1 ;
+				t_rank_l = i - 1 ;
+				break;
 			}
-            
+
 			switch (t_omg_j) {
-                case 1:
-                    t_rank_b = MPI_PROC_NULL ;
-                    t_rank_t = i + iproc;
-                    break;
-                case jproc:
-                    t_rank_t =  MPI_PROC_NULL ;
-                    t_rank_b = i - iproc;
-                    break ;
-                default:
-                    t_rank_t = i + iproc;
-                    t_rank_b = i - iproc;
-                    break;
+			case 1:
+				t_rank_b = MPI_PROC_NULL ;
+				t_rank_t = i + iproc;
+				break;
+			case jproc:
+				t_rank_t =  MPI_PROC_NULL ;
+				t_rank_b = i - iproc;
+				break ;
+			default:
+				t_rank_t = i + iproc;
+				t_rank_b = i - iproc;
+				break;
 			}
 			MPI_Send(&t_omg_i, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
 			MPI_Send(&t_omg_j, 1, MPI_INT, i, 2, MPI_COMM_WORLD);
@@ -160,7 +160,7 @@ void init_parallel(
 			MPI_Send(&t_rank_b, 1, MPI_INT, i, 9, MPI_COMM_WORLD);
 			MPI_Send(&t_rank_t, 1, MPI_INT, i, 10, MPI_COMM_WORLD);
 		}
-        
+
 	}
 	else{
 		MPI_Recv(omg_i, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
@@ -190,70 +190,205 @@ void pressure_comm( double **P,
 		double *bufRecv,
 		MPI_Status *status,
 		int chunk )
+
 {
-	int i, j;
 
-	/*Send to the left*/
-	for(j = jb, j<=jt, j++){
-		bufSend[j-jb]=P[il][j];
-	}
-	MPI_Sendrecv(bufSend, chunk, MPI_DOUBLE, rank_l, 1, bufRcv, chunk, MPI_DOUBLE, rank_r, 1, MPI_COMM_WORLD, status);
-	/*Receive from the right*/
-	for(j = jb, j<=jt, j++){
-		P[ir+1][j]= bufRcv[j-jb];
-	}
+int i,j ;
 
-	/*Send to the right*/
-	for(j = jb, j<=jt, j++){
-		bufSend[j-jb]=P[ir][j];
-	}
-	MPI_Sendrecv(bufSend, chunk, MPI_DOUBLE, rank_r, 1, bufRcv, chunk, MPI_DOUBLE, rank_l, 1, MPI_COMM_WORLD, status);
-	/*Receive from the left*/
-	for(j = jb, j<=jt, j++){
-		P[il-1][j]= bufRcv[j-jb];
-	}
+/************************************************/
+/*  send to the left  -  receive form the right */
+/************************************************/
+for (j = jb-1; j <= jt+1; ++j) {
+	bufSend[j - jb + 1] = P[j][il] ;
+}
 
-	/*Send to the top*/
-	for(i = il, i<=ir, i++){
-		bufSend[i-il]=P[i][jt];
-	}
-	MPI_Sendrecv(bufSend, chunk, MPI_DOUBLE, rank_t, 1, bufRcv, chunk, MPI_DOUBLE, rank_b, 1, MPI_COMM_WORLD, status);
-	/*Receive from the bottom*/
-	for(i = il, i<=ir, i++){
-		P[i][jb-1]= bufRcv[i-il];
-	}
+MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_l,chunk,MPI_DOUBLE,rank_r,MPI_COMM_WORLD,status) ;
 
-	/*Send to the bottom*/
-	for(i = il, i<=ir, i++){
-		bufSend[i-il]=P[i][jb];
-	}
-	MPI_Sendrecv(bufSend, chunk, MPI_DOUBLE, rank_b, 1, bufRcv, chunk, MPI_DOUBLE, rank_t, 1, MPI_COMM_WORLD, status);
-	/*Receive from the bottom*/
-	for(i = il, i<=ir, i++){
-		P[i][jt+1]= bufRcv[i-il];
-	}
+for (j = jb-1; j <= jt+1; ++j) {
+	P[j][ir+1] = bufRecv[j-jb + 1] ;
+}
+
+/****************************************/
+/*send to the right  - receive from left*/
+/****************************************/
+
+for (j = jb-1; j <= jt+1; ++j) {
+	bufSend[j - jb + 1] = P[j][ir] ;
+}
+
+MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_r,chunk,MPI_DOUBLE,rank_l,MPI_COMM_WORLD,status) ;
+
+for (j = jb-1; j <= jt+1; ++j) {
+	P[j][il-1] = bufRecv[j-jb + 1] ;
+}
+/******************************************/
+/* send to the top  - receive from bottom */
+/******************************************/
+
+for (i = il-1; i <= ir+1; ++i) {
+	bufSend[i - il + 1] = P[jt][i] ;
+}
+
+MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_t,chunk,MPI_DOUBLE,rank_b,MPI_COMM_WORLD,status) ;
+
+for (i = il-1; i <= ir+1; ++i) {
+	P[jb-1][i] = bufRecv[i - il + 1] ;
+}
+
+/**********************************************/
+/* send to the bottom  - receive from the top */
+/**********************************************/
+
+for (i = il-1; i <= ir+1; ++i) {
+	bufSend[i - il + 1] = P[jb][i] ;
+}
+
+MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_b,chunk,MPI_DOUBLE,rank_t,MPI_COMM_WORLD,status) ;
+
+for (i = il-1; i <= ir+1; ++i) {
+	P[jt+1][i] = bufRecv[i - il + 1] ;
 }
 
 
+
+}
+
 void uv_comm(	    double **U,
-             double **V,
-             int il ,
-             int ir,
-             int jb,
-             int jt ,
-             int rank_l,
-             int rank_r,
-             int rank_b,
-             int rank_t,
-             double *bufSend,
-             double *bufRecv,
-             MPI_Status *status,
-             int chunk )
+					double **V,
+		int il ,
+		int ir,
+		int jb,
+		int jt ,
+		int rank_l,
+		int rank_r,
+		int rank_b,
+		int rank_t,
+		double *bufSend,
+		double *bufRecv,
+		MPI_Status *status,
+		int chunk )
 
 {
-    
-    
-    
+
+int i,j ;
+
+/************************************************/
+/*  send to the left  -  receive form the right */
+/************************************************/
+
+/* Calculations for U */
+
+for (j = jb-1; j <= jt+1; ++j) {
+	bufSend[j - jb + 1] = U[j][il] ;
+}
+
+MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_l,chunk,MPI_DOUBLE,rank_r,MPI_COMM_WORLD,status) ;
+
+for (j = jb-1; j <= jt+1; ++j) {
+	U[j][ir+1] = bufRecv[j-jb + 1] ;
+}
+
+/* Calculations for V */
+
+for (j = jb-2; j <= jt+1; ++j) {
+	bufSend[j - jb + 2] = V[j][il] ;
+}
+
+MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_l,chunk,MPI_DOUBLE,rank_r,MPI_COMM_WORLD,status) ;
+
+for (j = jb-2; j <= jt+1; ++j) {
+	V[j][ir+1] = bufRecv[j-jb + 2] ;
+}
+
+
+
+/****************************************/
+/*send to the right  - receive from left*/
+/****************************************/
+
+/* Calculations for U */
+
+for (j = jb-1; j <= jt+1; ++j) {
+	bufSend[j - jb + 1] = U[j][ir-1] ;
+}
+
+MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_r,chunk,MPI_DOUBLE,rank_l,MPI_COMM_WORLD,status) ;
+
+for (j = jb-1; j <= jt+1; ++j) {
+	U[j][il-2] = bufRecv[j-jb + 1] ;
+}
+
+/* Calculations for V */
+
+for (j = jb-2; j <= jt+1; ++j) {
+	bufSend[j - jb + 2] = V[j][ir] ;
+}
+
+MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_r,chunk,MPI_DOUBLE,rank_l,MPI_COMM_WORLD,status) ;
+
+for (j = jb-2; j <= jt+1; ++j) {
+	V[j][il-1] = bufRecv[j-jb + 2] ;
+}
+
+
+/******************************************/
+/* send to the top  - receive from bottom */
+/******************************************/
+
+/* Calculations for U */
+
+for (i = il-2; i <= ir+1; ++i) {
+	bufSend[i - il + 2] = U[jt][i] ;
+}
+
+MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_t,chunk,MPI_DOUBLE,rank_b,MPI_COMM_WORLD,status) ;
+
+for (i = il-2; i <= ir+1; ++i) {
+	U[jb-1][i] = bufRecv[i - il + 2] ;
+}
+
+/* Calculations for V */
+
+for (i = il-1; i <= ir+1; ++i) {
+	bufSend[i - il + 1] = V[jt-1][i] ;
+}
+
+MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_t,chunk,MPI_DOUBLE,rank_b,MPI_COMM_WORLD,status) ;
+
+for (i = il-1; i <= ir+1; ++i) {
+	V[jb-2][i] = bufRecv[i - il + 1] ;
+}
+
+
+/**********************************************/
+/* send to the bottom  - receive from the top */
+/**********************************************/
+
+/* Calculations for U */
+
+for (i = il-2; i <= ir+1; ++i) {
+	bufSend[i - il + 2] = U[jb][i] ;
+}
+
+MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_b,chunk,MPI_DOUBLE,rank_t,MPI_COMM_WORLD,status) ;
+
+for (i = il-2; i <= ir+1; ++i) {
+	U[jt+1][i] = bufRecv[i - il + 2] ;
+}
+
+/* Calculations for V */
+
+for (i = il-1; i <= ir+1; ++i) {
+	bufSend[i - il + 1] = V[jb][i] ;
+}
+
+MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_b,chunk,MPI_DOUBLE,rank_t,MPI_COMM_WORLD,status) ;
+
+for (i = il-1; i <= ir+1; ++i) {
+	V[jt+1][i] = bufRecv[i - il + 1] ;
+}
+
+
 }
 
 
