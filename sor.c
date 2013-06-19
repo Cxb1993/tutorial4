@@ -35,6 +35,29 @@ void sor(
     
     /*Boundary values*/
     
+    for (j = jb; j <= jt; j++){
+        
+        if ( (il-1) == 0 ){
+            /*U values around left boundary*/
+            P[il-1][j] = P[il][j];
+        }
+        else if( ir == imax){
+            /*U values around right boundary*/
+            P[ir+1][j] = P[ir][j];
+        }
+    }
+    
+    for (i = il; i <= ir; i++){
+        
+        if ( (jb-1) == 0 ){
+            /*P values around bottom boundary*/
+            P[i][jb-1] = P[i][jb];
+        }
+        else if( jt == jmax){
+            /*P values around top boundary*/
+            P[i][jt+1] = P[i][jt];
+        }
+    }
     
     
     
