@@ -143,7 +143,8 @@ int main(int argn, char** args){
         while(it < itermax && res > eps){
             /*	Perform a SOR iteration according to (18) using the*/
             /*	provided function and retrieve the residual res*/
-            sor(omg, dx, dy, imax, jmax, P, RS, &res);
+            sor( omg, dx, dy, ir, il, jt, jb, P, RS, myrank, imax, jmax);
+        
             /*	it := it + 1*/
             it++;
         }
