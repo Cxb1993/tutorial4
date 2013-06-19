@@ -16,7 +16,8 @@ void Programm_Stop(char *txt);
 /* all processes will produce a text output, be synchronized and finished */
 
 /*New Functions*/
-void init_parallel(int iproc,
+void init_parallel(
+                   int iproc,
                    int jproc,
                    int imax,
                    int jmax,
@@ -33,7 +34,8 @@ void init_parallel(int iproc,
                    int *omg_j,
                    int num_proc);
 
-void pressure_comm( double **P,
+void pressure_comm(
+                   double **P,
                    int il ,
                    int ir,
                    int jb,
@@ -48,7 +50,8 @@ void pressure_comm( double **P,
                    int chunk);
 
 
-void uv_comm(double **U,
+void uv_comm(
+             double **U,
              double **V,
              int il ,
              int ir,

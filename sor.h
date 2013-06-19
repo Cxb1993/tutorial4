@@ -1,3 +1,5 @@
+#include "mpi.h"
+
 #ifndef __SOR_H_
 #define __SOR_H_
 
@@ -9,15 +11,27 @@
  * An \omega = 1 GS - implementation is given within sor.c.
  */
 void sor(
-  double omg,
-  double dx,
-  double dy,
-  int    imax,
-  int    jmax,
-  double **P,
-  double **RS,
-  double *res
-);
+        double omg,
+        double dx,
+        double dy,
+        int ir,
+        int il,
+        int jt,
+        int	jb,
+        double **P,
+        double **RS,
+        int myrank,
+        int rank_l,
+        int rank_r,
+        int rank_b,
+        int rank_t,
+        double *bufSend,
+        double *bufRecv,
+        MPI_Status *status,
+        int chunk,
+        int imax,
+        int jmax
+        );
 
 
 #endif

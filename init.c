@@ -44,7 +44,8 @@
  *                   write into the output file)
  */
 
-int read_parameters( const char *szFileName,       /* name of the file */
+int read_parameters(
+                    const char *szFileName,       /* name of the file */
                     double *Re,                /* reynolds number   */
                     double *UI,                /* velocity x-direction */
                     double *VI,                /* velocity y-direction */
@@ -62,12 +63,12 @@ int read_parameters( const char *szFileName,       /* name of the file */
                     double *alpha,             /* uppwind differencing factor*/
                     double *omg,               /* relaxation factor */
                     double *tau,               /* safety factor for time step*/
-                    int  *itermax,             /* max. number of iterations  */
-                    /* for pressure per time step */
+                    int  *itermax,             /* max. number of iterations
+                                                 for pressure per time step */
                     double *eps,               /* accuracy bound for pressure*/
-                    double *dt_value,
+                    double *dt_value,          /* time for output */
                     int *iproc,
-                    int *jproc)           /* time for output */
+                    int *jproc)
 {
     READ_DOUBLE( szFileName, *xlength );
     READ_DOUBLE( szFileName, *ylength );
@@ -135,7 +136,7 @@ void init_uvp(
             if (i == il-2) {
                 U[i][j] = UI ;
             }
-            if else (j == jb-2){
+            else if (j == jb-2){
                 V[i][j] = VI ;
             }
             else{

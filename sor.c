@@ -1,49 +1,84 @@
 #include "sor.h"
 #include <math.h>
+#include "parallel.h"
+
 
 void sor(
          double omg,
          double dx,
          double dy,
-         int    imax,
-         int    jmax,
+         int    ir,
+         int    il,
+         int 	jt,
+         int	jb,
          double **P,
          double **RS,
-         double *res
+         int myrank,
+         int rank_l,
+         int rank_r,
+         int rank_b,
+         int rank_t,
+         double *bufSend,
+         double *bufRecv,
+         MPI_Status *status,
+         int chunk,
+         int imax,
+         int jmax,
+         
          ) {
+    
     int i,j;
     double rloc;
     double coeff = omg/(2.0*(1.0/(dx*dx)+1.0/(dy*dy)));
+    double glob_res  ;
+    
+    
+    /*Boundary values*/
+    
+    
+    
+    
     
     /* SOR iteration */
-    for(i = 1; i <= imax; i++) {
-        for(j = 1; j<=jmax; j++) {
+    
+    
+    
+    for(j = jb; j <= jt; j++) {
+        for(i = il; i<=ir; i++) {
             P[i][j] = (1.0-omg)*P[i][j]
             + coeff*(( P[i+1][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]+P[i][j-1])/(dy*dy) - RS[i][j]);
         }
     }
     
+    
+    /*Passing the pressure values*/
+    pressure_comm(P,il,ir,jb,jt ,rank_l,rank_r,rank_b,rank_t,bufSend,bufRecv,status,chunk );
+    
+    
+    
+    
+    
     /* compute the residual */
     rloc = 0;
-    for(i = 1; i <= imax; i++) {
-        for(j = 1; j <= jmax; j++) {
+    for(j = jb; j <= jt; j++) {
+        for(i = il; i <= ir; i++) {
             rloc += ( (P[i+1][j]-2.0*P[i][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]-2.0*P[i][j]+P[i][j-1])/(dy*dy) - RS[i][j])*
             ( (P[i+1][j]-2.0*P[i][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]-2.0*P[i][j]+P[i][j-1])/(dy*dy) - RS[i][j]);
         }
     }
-    rloc = rloc/(imax*jmax);
-    rloc = sqrt(rloc);
-    /* set residual */
-    *res = rloc;
+    
+    MPI_Reduce(&rloc, &glob_res, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     
     
-    /* set boundary values */
-    for(i = 1; i <= imax; i++) {
-        P[i][0] = P[i][1];
-        P[i][jmax+1] = P[i][jmax];
+    if ( myrank == 0 ) {
+        
+        glob_res = glob_res/(jmax*imax) ;
+        glob_res = sqrt(glob_res) ;
+        
+        MPI_Bcast (&glob_res,1,MPI_DOUBLE,0,MPI_COMM_WORLD) ;
+        
+        
     }
-    for(j = 1; j <= jmax; j++) {
-        P[0][j] = P[1][j];
-        P[imax+1][j] = P[imax][j];
-    }
+    
+    
 }

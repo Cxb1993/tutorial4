@@ -6,38 +6,42 @@
  * Determines the value of U and G according to the formula
  *
  * @f$ F_{i,j} := u_{i,j} + \delta t \left( \frac{1}{Re} \left( \left[
-    \frac{\partial^2 u}{\partial x^2} \right]_{i,j} + \left[
-    \frac{\partial^2 u}{\partial y^2} \right]_{i,j} \right) - \left[
-    \frac{\partial (u^2)}{\partial x} \right]_{i,j} - \left[
-    \frac{\partial (uv)}{\partial y} \right]_{i,j} + g_x \right) @f$
+ \frac{\partial^2 u}{\partial x^2} \right]_{i,j} + \left[
+ \frac{\partial^2 u}{\partial y^2} \right]_{i,j} \right) - \left[
+ \frac{\partial (u^2)}{\partial x} \right]_{i,j} - \left[
+ \frac{\partial (uv)}{\partial y} \right]_{i,j} + g_x \right) @f$
  *
  * @f$ i=1,\ldots,imax-1, \quad j=1,\ldots,jmax @f$
  *
  * @f$ G_{i,j} := v_{i,j} + \delta t \left( \frac{1}{Re} \left(
-   \left[ \frac{\partial^2 v}{\partial x^2}\right]_{i,j} + \left[ \frac{\partial^2 v}{\partial
-                   y^2} \right]_{i,j} \right) - \left[ \frac{\partial
-                   (uv)}{\partial x} \right]_{i,j} - \left[
-                 \frac{\partial (v^2)}{\partial y} \right]_{i,j} + g_y
-               \right) @f$
+ \left[ \frac{\partial^2 v}{\partial x^2}\right]_{i,j} + \left[ \frac{\partial^2 v}{\partial
+ y^2} \right]_{i,j} \right) - \left[ \frac{\partial
+ (uv)}{\partial x} \right]_{i,j} - \left[
+ \frac{\partial (v^2)}{\partial y} \right]_{i,j} + g_y
+ \right) @f$
  *
  * @f$ i=1,\ldots,imax, \quad j=1,\ldots,jmax-1 @f$
  *
  */
 void calculate_fg(
-  double Re,
-  double GX,
-  double GY,
-  double alpha,
-  double dt,
-  double dx,
-  double dy,
-  int imax,
-  int jmax,
-  double **U,
-  double **V,
-  double **F,
-  double **G
-);
+                  double Re,
+                  double GX,
+                  double GY,
+                  double alpha,
+                  double dt,
+                  double dx,
+                  double dy,
+                  int il,
+                  int ir,
+                  int jb,
+                  int jt,
+                  int imax,
+                  int jmax,
+                  double **U,
+                  double **V,
+                  double **F,
+                  double **G
+                  );
 
 
 /**
@@ -48,15 +52,17 @@ void calculate_fg(
  *
  */
 void calculate_rs(
-  double dt,
-  double dx,
-  double dy,
-  int imax,
-  int jmax,
-  double **F,
-  double **G,
-  double **RS
-);
+                  double dt,
+                  double dx,
+                  double dy,
+                  int ir,
+                  int il,
+                  int jt,
+                  int jb,
+                  double **F,
+                  double **G,
+                  double **RS
+                  );
 
 
 /**
@@ -68,16 +74,20 @@ void calculate_rs(
  *
  */
 void calculate_dt(
-  double Re,
-  double tau,
-  double *dt,
-  double dx,
-  double dy,
-  int imax,
-  int jmax,
-  double **U,
-  double **V
-);
+                  double Re,
+                  double tau,
+                  double *dt,
+                  double dx,
+                  double dy,
+                  int il,
+                  int ir,
+                  int jb,
+                  int jt,
+                  double **U,
+                  double **V,
+                  int num_proc,
+                  int myrank
+                  );
 
 
 /**
@@ -94,16 +104,18 @@ void calculate_dt(
  * @image html calculate_uv.jpg
  */
 void calculate_uv(
-  double dt,
-  double dx,
-  double dy,
-  int imax,
-  int jmax,
-  double **U,
-  double **V,
-  double **F,
-  double **G,
-  double **P
-);
+                  double dt,
+                  double dx,
+                  double dy,
+                  int ir,
+                  int il,
+                  int jt,
+                  int jb,
+                  double **U,
+                  double **V,
+                  double **F,
+                  double **G,
+                  double **P
+                  );
 
 #endif

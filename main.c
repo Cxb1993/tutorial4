@@ -102,7 +102,7 @@ int main(int argn, char** args){
     
     
     MPI_Init( &argc, &argv );                    /* execute n processes      */
-    MPI_Comm_size( MPI_COMM_WORLD, num_proc);     /* asking for the number of processes  */
+    MPI_Comm_size( MPI_COMM_WORLD, &num_proc);     /* asking for the number of processes  */
     
     init_parallel(iproc, jproc, imax, jmax, &myrank, &il, &ir, &jb, &jt, &rank_l, &rank_r, &rank_b, &rank_t, &omg_i, &omg_j, num_proc);
     
@@ -127,16 +127,15 @@ int main(int argn, char** args){
     /*                             Performing the main loop                    */
     /* ----------------------------------------------------------------------- */
     
-    /* Upperbound t_end+dt/10 to be sure that it runs for t=t_end */
-    while (t<t_end+dt/10){
+    while (t<=t_end){
         /*	Select dt*/
-        calculate_dt(Re, tau, &dt, dx, dy, imax, jmax, U, V);
+        calculate_dt(Re, tau, &dt, dx, dy, il, ir, jb, jt, U, V, num_proc, myrank);
         /*	Set boundary values for u and v according to (14),(15)*/
-        boundaryvalues(imax, jmax, U, V);
+        boundaryvalues(il, ir, jb, jt, imax, jmax, U, V);
         /*	Compute F(n) and G(n) according to (9),(10),(17)*/
-        calculate_fg(Re, GX, GY, alpha, dt, dx, dy, imax, jmax, U, V ,F , G);
+        calculate_fg(Re, GX, GY, alpha, dt, dx, dy, il, ir, jb, jt, imax, jmax, U, V ,F , G);
         /*	Compute the right-hand side rs of the pressure equation (11)*/
-        calculate_rs(dt, dx, dy, imax, jmax, F, G, RS);
+        calculate_rs(dt, dx, dy, il, ir, jb, jt, F, G, RS);
         /*	Set it := 0*/
         res = 1.0;
         it = 0;
@@ -149,7 +148,7 @@ int main(int argn, char** args){
             it++;
         }
         /*	Compute u(n+1) and v(n+1) according to (7),(8)*/
-        calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P);
+        calculate_uv(dt, dx, dy, il, ir, jb, jt, U, V, F, G, P);
         /*	Output of u; v; p values for visualization, if necessary*/
         
         n_div=(dt_value/dt);

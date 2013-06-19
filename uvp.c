@@ -35,6 +35,10 @@ void calculate_fg(
                   double dt,
                   double dx,
                   double dy,
+                  int il,
+                  int ir,
+                  int jb,
+                  int jt,
                   int imax,
                   int jmax,
                   double **U,
@@ -56,12 +60,10 @@ void calculate_fg(
     double duvdx ;
     double d2vdx2 ;
     double d2vdy2 ;
-        
+    
     /*Determines the value of F according to the formula above with the help of temporary variables*/
-    for ( i = 1 ; i < imax ; i++ )
-    {
-        for( j = 1 ; j <= jmax ; j ++ )
-        {
+    for(j = jb; j <= jt; j++) {
+        for(i = il-1; i<=ir; i++) {
             
             d2udx2 = ( U[i+1][j]  - 2*U[i][j] + U[i-1][j] ) / ( dx * dx) ;
             
@@ -82,10 +84,8 @@ void calculate_fg(
     }
     
     /*Determines the value of G according to the formula above with the help of temporary variables*/
-    for ( i = 1 ; i <= imax ; i++ )
-    {
-        for( j = 1 ; j < jmax ; j ++ )
-        {
+    for(j = jb-1; j <= jt; j++) {
+        for(i = il; i<=ir; i++) {
             
             d2vdx2 = ( V[i+1][j]  - 2*V[i][j] + V[i-1][j] ) / ( dx * dx) ;
             
@@ -106,18 +106,30 @@ void calculate_fg(
     }
     
     /*Set boundary values along the columns*/
-    for (j = 1; j <= jmax; j++){
-        /*F values on right and left boundaries*/
-        F[0][j] = U[0][j];
-        F[imax][j] = U[imax][j];
+    for (j = jb; j <= jt; j++){
+        
+        if ( (il-1) == 0 ){
+            /*F values on left boundary*/
+            F[il-1][j] = U[il-1][j];
+        }
+        else if( ir == imax){
+            /*F values on right boundary*/
+            F[ir][j] = U[ir][j];
+        }
     }
     
     /*Set boundary values along the rows*/
-    for (i = 1; i <= imax; i++){
-        /*G values on top and bottom boundaries*/
-        G[i][0] = V[i][0];
-        G[i][jmax] = V[i][jmax];
+    for (i = il; i <= ir; i++){
+        if ( (jb-1) == 0 ){
+            /*G values on bottom boundary*/
+            G[i][jb-1] = V[i][jb-1];
+        }
+        else if( jt == jmax){
+            /*G values on top boundary*/
+            G[i][jt] = V[i][jt];
+        }
     }
+    
     
 }
 
@@ -136,15 +148,17 @@ void calculate_rs(
                   double dt,
                   double dx,
                   double dy,
-                  int imax,
-                  int jmax,
+                  int ir,
+                  int il,
+                  int jt,
+                  int jb,
                   double **F,
                   double **G,
                   double **RS
                   ) {
 	int i, j;
-    for(i = 1; i <= imax; i++) {
-        for(j = 1; j <= jmax; j++) {
+    for(i = il; i <= ir; i++) {
+        for(j = jb; j <= jt; j++) {
             RS[i][j] = 1 / dt*( (F[i][j]-F[i-1][j])/dx + (G[i][j]-G[i][j-1])/dy);
         }
     }
@@ -168,19 +182,32 @@ void calculate_dt(
                   double *dt,
                   double dx,
                   double dy,
-                  int imax,
-                  int jmax,
+                  int ir,
+                  int il,
+                  int jt,
+                  int jb,
                   double **U,
-                  double **V
+                  double **V,
+                  int num_proc,
+                  int myrank
                   ) {
-    /*calculates maximum absolute velocities in x and y direction*/
+    /*calculates maximum absolute velocities in x and y direction with respect to different subdomains*/
     double umax=0, vmax=0;
+    double glob_umax ;
+    double glob_vmax ;
     double a,b,c;
-    int i, j;
-    for(i = 1; i <= imax; i++) {
-        for(j = 1; j<=jmax; j++) {
+    int i, j,k;
+    MPI_Status status;
+    
+    for(j = jb; j <= jt; j++) {
+        for(i = il-1; i<=ir; i++) {
             if(abs(U[i][j])>umax)
                 umax = abs(U[i][j]);
+        }
+    }
+    
+    for(j = jb-1; j <= jt; j++) {
+        for(i = il; i<=ir; i++) {
             
             if(abs(V[i][j])>vmax)
                 vmax = abs(V[i][j]);
@@ -188,22 +215,45 @@ void calculate_dt(
         }
     }
     
-    /*Determines the minimum of dt according to stability criteria and multiply it by safety factor tau if tau is positive, otherwise uses the default value of dt*/
-    if (tau>0){
-        a = Re/(2.0*(1.0/(dx*dx)+1.0/(dy*dy)));
-        b = dx/umax;
-        c = dy/vmax;
-        if(a < b && a < c){
-            *dt = tau * a;
+    MPI_Reduce(&umax, &glob_umax, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&vmax, &glob_vmax, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    /*maybe sinchronisation with barier*/
+    
+    if (myrank == 0 ) {
+        
+        /*Determines the minimum of dt according to stability criteria and multiply it by safety factor tau if tau is positive, otherwise uses the default value of dt*/
+        if (tau>0){
+            a = Re/(2.0*(1.0/(dx*dx)+1.0/(dy*dy)));
+            b = dx/glob_umax;
+            c = dy/glob_vmax;
+            if(a < b && a < c){
+                *dt = tau * a;
+            }
+            else if(b < a && b < c){
+                *dt = tau * b;
+            }
+            else{
+                *dt = tau * c;
+            }
         }
-        else if(b < a && b < c){
-            *dt = tau * b;
+        for (k = 0; k < num_proc; ++k) {
+            
+            MPI_Send(dt, 1, MPI_DOUBLE, k, 1, MPI_COMM_WORLD);
+            
         }
-        else{
-            *dt = tau * c;
-        }
+        
     }
+    
+    else {
+        
+    	MPI_Recv(dt, 1, MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, &status);
+        
+    }
+    
+    
 }
+/*Check the syntax of the code and discus sinchronisation, as well as in init paralell*/
+
 
 /* ----------------------------------------------------------------------- */
 /*                             Function calculate_uv                       */
@@ -226,8 +276,10 @@ void calculate_uv(
                   double dt,
                   double dx,
                   double dy,
-                  int imax,
-                  int jmax,
+                  int ir,
+                  int il,
+                  int jt,
+                  int jb,
                   double **U,
                   double **V,
                   double **F,
@@ -237,14 +289,14 @@ void calculate_uv(
     int i;
     int j;
     /*Calculate the new velocity U according to the formula above*/
-    for(i = 1; i <= (imax-1); i++){
-        for(j = 1; j <= jmax; j++){
+    for(i = (il-1); i <= ir; i++){
+        for(j = jb; j <= jt; j++){
             U[i][j] = F[i][j]-(dt/dx)*(P[i+1][j]-P[i][j]);
         }
     }
     /*Calculate the new velocity V according to the formula above*/
-    for(i = 1; i <= imax; i++){
-        for(j = 1; j <= (jmax-1); j++){
+    for(i = il; i <= ir; i++){
+        for(j = (jb-1); j <= jt; j++){
             V[i][j] = G[i][j]-(dt/dy)*(P[i][j+1]-P[i][j]);
         }
     }
