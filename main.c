@@ -97,13 +97,14 @@ int main(int argn, char** args){
     int omg_j;
     int num_proc;
     
-    /* read the program configuration file using read_parameters()*/
-    read_parameters("cavity100.dat", &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, &iproc, &jproc);
     
     
     MPI_Init( &argc, &argv );                    /* execute n processes      */
     MPI_Comm_size( MPI_COMM_WORLD, &num_proc);     /* asking for the number of processes  */
-    
+
+    /* read the program configuration file using read_parameters()*/
+    read_parameters("cavity100.dat", &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, &iproc, &jproc);
+
     init_parallel(iproc, jproc, imax, jmax, &myrank, &il, &ir, &jb, &jt, &rank_l, &rank_r, &rank_b, &rank_t, &omg_i, &omg_j, num_proc);
     
     /* set up the matrices (arrays) needed using the matrix() command*/
@@ -154,7 +155,8 @@ int main(int argn, char** args){
         
         n_div=(dt_value/dt);
         if(n % n_div == 0){
-            write_vtkFile("cavity100", n , xlength, ylength, imax, jmax, dx, dy, U, V, P);
+            void output uvp( U, V, P, il, ir, jb, jt, omg_i, omg_j,argv[1],n,dx,dy)
+            /*write_vtkFile("cavity100", n , xlength, ylength, imax, jmax, dx, dy, U, V, P);*/
         }
         /*	t := t + dt*/
         t = t + dt;

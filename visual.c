@@ -19,8 +19,6 @@ void output_uvp(
                 double dy
                 ){
     
-
-    
     int i,j;
     char szFileName[80];
     FILE *fp=NULL;
