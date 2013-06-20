@@ -1,4 +1,5 @@
 #include "helper.h"
+#include "stddef.h" 
 #include "visual.h"
 #include "init.h"
 #include "boundary_val.h"
@@ -80,7 +81,9 @@ int main(int argn, char** args){
     double **V;		/* velocity in y-direction*/
     double **P;		/* pressure*/
     double **RS;		/* right-hand side for pressure iteration*/
-    double **F,**G;		/* F;G*/
+    double **F,**G;     /* F;G*/
+    double *bufSend;
+    double *bufRecv ;
     int n_div;
     int iproc;
     int jproc;
@@ -96,7 +99,8 @@ int main(int argn, char** args){
     int omg_i;
     int omg_j;
     int num_proc;
-    
+    int chunk;
+    int a,b ;
     
     
     MPI_Init( &argc, &argv );                    /* execute n processes      */
@@ -107,6 +111,17 @@ int main(int argn, char** args){
 
     init_parallel(iproc, jproc, imax, jmax, &myrank, &il, &ir, &jb, &jt, &rank_l, &rank_r, &rank_b, &rank_t, &omg_i, &omg_j, num_proc);
     
+    /*calculating max for chunk size*/
+
+    a = jb - jt + 5 ;
+    b = ir - il + 5 ;
+
+    if (a>b) chunk = a;
+    else chunk = b ;
+   bufSend = (double *)  malloc((size_t)( chunk * sizeof( double )));
+   bufRecv = (double *)  malloc((size_t)( chunk * sizeof( double )));
+
+
     /* set up the matrices (arrays) needed using the matrix() command*/
     U = matrix(il-2, ir+1, jb-1, jt+1);
     V = matrix(il-1, ir+1, jb-2, jt+1);
@@ -114,7 +129,8 @@ int main(int argn, char** args){
     RS = matrix(il, ir, jb, jt);
     F = matrix(il-2, ir+1, jb-1, jt+1);
     G = matrix(il-1, ir+1, jb-2, jt+1);
-    
+
+
     /* initialize current time and time step*/
     t = 0;
     n = 0;
@@ -145,7 +161,6 @@ int main(int argn, char** args){
             /*	Perform a SOR iteration according to (18) using the*/
             /*	provided function and retrieve the residual res*/
             sor( omg, dx, dy, ir, il, jt, jb, P, RS, myrank, imax, jmax);
-        
             /*	it := it + 1*/
             it++;
         }
@@ -155,9 +170,7 @@ int main(int argn, char** args){
         
         n_div=(dt_value/dt);
         if(n % n_div == 0){
-            void output uvp( U, V, P, il, ir, jb, jt, omg_i, omg_j,argv[1],n,dx,dy)
-            /*write_vtkFile("cavity100", n , xlength, ylength, imax, jmax, dx, dy, U, V, P);*/
-        }
+            void output uvp( U, V, P, il, ir, jb, jt, omg_i, omg_j,argv[1],n,dx,dy)        }
         /*	t := t + dt*/
         t = t + dt;
         /*	n := n + 1*/
