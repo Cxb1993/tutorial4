@@ -69,7 +69,7 @@ void init_parallel(
 	int res_i, res_j;
 	MPI_Status status;
     
-	MPI_Comm_rank(MPI_COMM_WORLD, &myrank) ;
+	MPI_Comm_rank(MPI_COMM_WORLD, myrank) ;
     
 	if (myrank == 0 ) {
 		res_i = imax % iproc;
@@ -94,10 +94,10 @@ void init_parallel(
 			*jb = jmax/jproc * (*omg_i)-1;
 			*jt = imax/iproc * (*omg_i)-1;
 		}
-		rank_l = MPI_PROC_NULL ;
-		rank_r = myrank + 1 ;
-		rank_t = myrank + iproc;
-		rank_b = MPI_PROC_NULL ;
+		*rank_l = MPI_PROC_NULL ;
+		*rank_r = *myrank + 1 ;
+		*rank_t = *myrank + iproc;
+		*rank_b = MPI_PROC_NULL ;
         
 		for (i = 1; i < num_proc; ++i) {
 			t_omg_i= (i%iproc) + 1;
@@ -120,35 +120,36 @@ void init_parallel(
 				t_jb = jmax/jproc * t_omg_i-1;
 				t_jt = imax/iproc * t_omg_i-1;
 			}
-			switch (t_omg_i) {
-                case 1:
-                    t_rank_l = MPI_PROC_NULL ;
-                    t_rank_r = i + 1 ;
-                    break;
-                case iproc:
-                    t_rank_r =  MPI_PROC_NULL ;
-                    t_rank_l = i - 1 ;
-                    break ;
-                default:
-                    t_rank_r = i + 1 ;
-                    t_rank_l = i - 1 ;
-                    break;
+            
+            
+            
+            if (t_omg_i == 1){
+                t_rank_l = MPI_PROC_NULL ;
+                t_rank_r = i + 1 ;
+            }
+            else if (t_omg_i == iproc ) {
+                
+                t_rank_r =  MPI_PROC_NULL ;
+                t_rank_l = i - 1 ;
+            }
+            else {
+                t_rank_r = i + 1 ;
+                t_rank_l = i - 1 ;
 			}
             
-			switch (t_omg_j) {
-                case 1:
-                    t_rank_b = MPI_PROC_NULL ;
-                    t_rank_t = i + iproc;
-                    break;
-                case jproc:
-                    t_rank_t =  MPI_PROC_NULL ;
-                    t_rank_b = i - iproc;
-                    break ;
-                default:
-                    t_rank_t = i + iproc;
-                    t_rank_b = i - iproc;
-                    break;
+            if (t_omg_j == 1){
+                t_rank_b = MPI_PROC_NULL ;
+                t_rank_t = i + iproc;
+            }
+            else if (t_omg_j == jproc){
+                t_rank_t =  MPI_PROC_NULL ;
+                t_rank_b = i - iproc;
+            }
+            else{
+                t_rank_t = i + iproc;
+                t_rank_b = i - iproc;
 			}
+            
 			MPI_Send(&t_omg_i, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
 			MPI_Send(&t_omg_j, 1, MPI_INT, i, 2, MPI_COMM_WORLD);
 			MPI_Send(&t_il, 1, MPI_INT, i, 3, MPI_COMM_WORLD);
