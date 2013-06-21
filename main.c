@@ -49,7 +49,7 @@
  *   iteration loop the operation sor() is used.
  * - calculate_uv() Calculate the velocity at the next time step.
  */
-int main(int argn, char** args){
+int main(int argc, char** argv){
     /*Geometry data*/
     double xlength;		 /*domain size in x-direction*/
     double ylength;		/*domain size in y-direction*/
