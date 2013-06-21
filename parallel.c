@@ -203,7 +203,7 @@ void pressure_comm(
         bufSend[j - jb + 1] = P[il][j] ;
     }
     
-    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_l,chunk,MPI_DOUBLE,rank_r,MPI_COMM_WORLD,status) ;
+    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_l,1,bufRecv,chunk,MPI_DOUBLE,rank_r,1,MPI_COMM_WORLD,status) ;
     
     for (j = jb-1; j <= jt+1; ++j) {
         P[ir+1][j] = bufRecv[j-jb + 1] ;
@@ -217,7 +217,7 @@ void pressure_comm(
         bufSend[j - jb + 1] = P[ir][j] ;
     }
     
-    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_r,chunk,MPI_DOUBLE,rank_l,MPI_COMM_WORLD,status) ;
+    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_r,2,bufRecv,chunk,MPI_DOUBLE,rank_l,2,MPI_COMM_WORLD,status) ;
     
     for (j = jb-1; j <= jt+1; ++j) {
         P[il-1][j] = bufRecv[j-jb + 1] ;
@@ -230,7 +230,7 @@ void pressure_comm(
         bufSend[i - il + 1] = P[i][jt] ;
     }
     
-    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_t,chunk,MPI_DOUBLE,rank_b,MPI_COMM_WORLD,status) ;
+    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_t,3,bufRecv,chunk,MPI_DOUBLE,rank_b,3,MPI_COMM_WORLD,status) ;
     
     for (i = il-1; i <= ir+1; ++i) {
         P[i][jb-1] = bufRecv[i - il + 1] ;
@@ -244,7 +244,7 @@ void pressure_comm(
         bufSend[i - il + 1] = P[i][jb] ;
     }
     
-    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_b,chunk,MPI_DOUBLE,rank_t,MPI_COMM_WORLD,status) ;
+    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_b,4,bufRecv,chunk,MPI_DOUBLE,rank_t,4,MPI_COMM_WORLD,status) ;
     
     for (i = il-1; i <= ir+1; ++i) {
         P[i][jt+1] = bufRecv[i - il + 1] ;
@@ -284,7 +284,7 @@ void uv_comm(
         bufSend[j - jb + 1] = U[il][j] ;
     }
     
-    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_l,chunk,MPI_DOUBLE,rank_r,MPI_COMM_WORLD,status) ;
+    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_l,1,bufRecv,chunk,MPI_DOUBLE,rank_r,1,MPI_COMM_WORLD,status) ;
     
     for (j = jb-1; j <= jt+1; ++j) {
         U[ir+1][j] = bufRecv[j-jb + 1] ;
@@ -296,7 +296,7 @@ void uv_comm(
         bufSend[j - jb + 2] = V[il][j] ;
     }
     
-    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_l,chunk,MPI_DOUBLE,rank_r,MPI_COMM_WORLD,status) ;
+    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_l,2,bufRecv,chunk,MPI_DOUBLE,rank_r,2,MPI_COMM_WORLD,status) ;
     
     for (j = jb-2; j <= jt+1; ++j) {
         V[ir+1][j] = bufRecv[j-jb + 2] ;
@@ -314,7 +314,7 @@ void uv_comm(
         bufSend[j - jb + 1] = U[ir-1][j] ;
     }
     
-    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_r,chunk,MPI_DOUBLE,rank_l,MPI_COMM_WORLD,status) ;
+    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_r,3,bufRecv,chunk,MPI_DOUBLE,rank_l,3,MPI_COMM_WORLD,status) ;
     
     for (j = jb-1; j <= jt+1; ++j) {
         U[il-2][j] = bufRecv[j-jb + 1] ;
@@ -326,7 +326,7 @@ void uv_comm(
         bufSend[j - jb + 2] = V[ir][j] ;
     }
     
-    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_r,chunk,MPI_DOUBLE,rank_l,MPI_COMM_WORLD,status) ;
+    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_r,4,bufRecv,chunk,MPI_DOUBLE,rank_l,4,MPI_COMM_WORLD,status) ;
     
     for (j = jb-2; j <= jt+1; ++j) {
         V[il-1][j] = bufRecv[j-jb + 2] ;
@@ -343,7 +343,7 @@ void uv_comm(
         bufSend[i - il + 2] = U[i][jt] ;
     }
     
-    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_t,chunk,MPI_DOUBLE,rank_b,MPI_COMM_WORLD,status) ;
+    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_t,5,bufRecv,chunk,MPI_DOUBLE,rank_b,5,MPI_COMM_WORLD,status) ;
     
     for (i = il-2; i <= ir+1; ++i) {
         U[i][jb-1] = bufRecv[i - il + 2] ;
@@ -355,7 +355,7 @@ void uv_comm(
         bufSend[i - il + 1] = V[i][jt-1] ;
     }
     
-    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_t,chunk,MPI_DOUBLE,rank_b,MPI_COMM_WORLD,status) ;
+    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_t,6,bufRecv,chunk,MPI_DOUBLE,rank_b,6,MPI_COMM_WORLD,status) ;
     
     for (i = il-1; i <= ir+1; ++i) {
         V[i][jb-2] = bufRecv[i - il + 1] ;
@@ -372,7 +372,7 @@ void uv_comm(
         bufSend[i - il + 2] = U[i][jb] ;
     }
     
-    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_b,chunk,MPI_DOUBLE,rank_t,MPI_COMM_WORLD,status) ;
+    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_b,7,bufRecv,chunk,MPI_DOUBLE,rank_t,7,MPI_COMM_WORLD,status) ;
     
     for (i = il-2; i <= ir+1; ++i) {
         U[i][jt+1] = bufRecv[i - il + 2] ;
@@ -384,7 +384,7 @@ void uv_comm(
         bufSend[i - il + 1] = V[i][jb] ;
     }
     
-    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_b,chunk,MPI_DOUBLE,rank_t,MPI_COMM_WORLD,status) ;
+    MPI_Sendrecv(bufSend,chunk,MPI_DOUBLE,rank_b,8,bufRecv,chunk,MPI_DOUBLE,rank_t,8,MPI_COMM_WORLD,status) ;
     
     for (i = il-1; i <= ir+1; ++i) {
         V[i][jt+1] = bufRecv[i - il + 1] ;

@@ -1,4 +1,4 @@
-#include "mpi.h"
+#include <mpi.h>
 
 #ifndef __SOR_H_
 #define __SOR_H_

@@ -1,6 +1,8 @@
 #include "uvp.h"
 #include <math.h>
 #include <stdlib.h>
+#include <mpi.h>
+
 
 /* ----------------------------------------------------------------------- */
 /*                             Function calculate_fg                       */

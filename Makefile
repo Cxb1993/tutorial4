@@ -7,6 +7,7 @@ SRC_SIM 	= 	helper 		\
 		      	uvp 		\
 			visual 		\
 			parallel 	\
+			sor 		\
 		      	main
 
 SRC_JM		=	helper		\
@@ -36,5 +37,5 @@ visual.o     	: helper.h
 parallel.o 	: parallel.h
 join_matrix.o	: helper.h
 
-$main.o       	: helper.h init.h boundary_val.h uvp.h visual.h parallel.h
+$main.o       	: helper.h init.h boundary_val.h uvp.h visual.h parallel.h sor.h
 $join_matrix.o	: helper.h
