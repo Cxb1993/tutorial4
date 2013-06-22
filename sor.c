@@ -7,10 +7,10 @@ void sor(
          double omg,
          double dx,
          double dy,
-         int    ir,
          int    il,
-         int 	jt,
-         int	jb,
+         int    ir,
+         int 	jb,
+         int	jt,
          int rank_l,
          int rank_r,
          int rank_b,
@@ -73,12 +73,8 @@ void sor(
         }
     }
     
-    
     /*Passing the pressure values*/
     pressure_comm(P,il,ir,jb,jt ,rank_l,rank_r,rank_b,rank_t,bufSend,bufRecv,status,chunk );
-    
-    
-    
     
     
     /* compute the residual */
@@ -89,7 +85,6 @@ void sor(
             ( (P[i+1][j]-2.0*P[i][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]-2.0*P[i][j]+P[i][j-1])/(dy*dy) - RS[i][j]);
         }
     }
-    
     MPI_Reduce(&rloc, &glob_res, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     
     
@@ -97,11 +92,9 @@ void sor(
         
         glob_res = glob_res/(jmax*imax) ;
         glob_res = sqrt(glob_res) ;
-        
-        MPI_Bcast (&glob_res,1,MPI_DOUBLE,0,MPI_COMM_WORLD) ;
-        
-        
+        printf("my rank = %i, global = %f\n", myrank, glob_res);
     }
+    MPI_Bcast (&glob_res,1,MPI_DOUBLE,0,MPI_COMM_WORLD) ;
     *res=glob_res;
     
 }

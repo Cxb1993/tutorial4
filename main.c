@@ -82,10 +82,8 @@ int main(int argc, char** argv){
     double **P;		/* pressure*/
     double **RS;		/* right-hand side for pressure iteration*/
     double **F,**G;     /* F;G*/
-    /*
      double *bufSend;
      double *bufRecv ;
-     */
     int n_div;
     int iproc;
     int jproc;
@@ -125,9 +123,6 @@ int main(int argc, char** argv){
     if (a>b) chunk = a;
     else chunk = b ;
     
-    double *bufSend;
-    double *bufRecv ;
-    
     bufSend = (double *)  malloc((size_t)( chunk * sizeof( double )));
     bufRecv = (double *)  malloc((size_t)( chunk * sizeof( double )));
     
@@ -161,26 +156,22 @@ int main(int argc, char** argv){
         calculate_rs(dt, dx, dy, il, ir, jb, jt, F, G, RS);
         res = 1.0;
         it = 0;
-        
-        /*while(it < itermax && res > eps){
-            sor( omg, dx, dy, ir, il, jt, jb, rank_l, rank_r, rank_b, rank_t, bufSend, bufRecv, status, chunk , P, RS, myrank, imax, jmax,&res);
+        while(it < itermax && res > eps){
+            sor( omg, dx, dy, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, bufSend, bufRecv, status, chunk , P, RS, myrank, imax, jmax,&res);
             printf("myrank=%d ,Residual=%f\n",myrank,res);
             it++;
-        }*/
-
+        }
         calculate_uv(dt, dx, dy, il, ir, jb, jt, U, V, F, G, P);
-        
+    
         
        uv_comm(U,V,il,ir,jb,jt,rank_l,rank_r,rank_b,rank_t,bufSend, bufRecv, status, chunk);
         
-/*       n_div=(dt_value/dt);
+       n_div=(dt_value/dt);
         if (n % n_div == 0) {
             output_uvp( U, V, P, il, ir, jb, jt, omg_i, omg_j,"cavity",n,dx,dy, myrank);
         }
-  */  
         t = t + dt;
         n++;
-        printf("my rank=%d, time=%f ,time_step=%d\n",myrank,t,n);
     }
     
     free(bufSend);

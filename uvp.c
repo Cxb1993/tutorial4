@@ -80,8 +80,6 @@ void calculate_fg(
             
             
             F[i][j] = U[i][j]  + dt * ( 1/Re * ( (d2udx2 ) + (d2udy2) ) - (du2dx)  - duvdy + GX ) ;
-            
-            
         }
     }
     
@@ -103,7 +101,6 @@ void calculate_fg(
             
             
             G[i][j] = V[i][j]  + dt * ( 1/Re * ( (d2vdx2 ) + (d2vdy2) ) - (duvdx)  - dv2dy + GY ) ;
-            
         }
     }
     
@@ -150,10 +147,10 @@ void calculate_rs(
                   double dt,
                   double dx,
                   double dy,
-                  int ir,
                   int il,
-                  int jt,
+                  int ir,
                   int jb,
+                  int jt,
                   double **F,
                   double **G,
                   double **RS
@@ -184,10 +181,10 @@ void calculate_dt(
                   double *dt,
                   double dx,
                   double dy,
-                  int ir,
                   int il,
-                  int jt,
+                  int ir,
                   int jb,
+                  int jt,
                   double **U,
                   double **V,
                   int num_proc,
@@ -278,10 +275,10 @@ void calculate_uv(
                   double dt,
                   double dx,
                   double dy,
-                  int ir,
                   int il,
-                  int jt,
+                  int ir,
                   int jb,
+                  int jt,
                   double **U,
                   double **V,
                   double **F,
