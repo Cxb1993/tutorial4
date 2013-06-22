@@ -67,60 +67,69 @@ void init_parallel(
 	int i ;
 	int t_il, t_ir, t_jb, t_jt, t_omg_i, t_omg_j, t_rank_l, t_rank_r, t_rank_b, t_rank_t;
 	int res_i, res_j;
+    int quot_i,quot_j;
 	MPI_Status status;
     
 	MPI_Comm_rank(MPI_COMM_WORLD, myrank) ;
     
-	if (myrank == 0 ) {
-		res_i = imax % iproc;
-		res_j = jmax % jproc;
+	if ( *myrank == 0 ) {
+		res_i = ( (imax-1) % iproc) ;
+		res_j = ( (jmax-1) % jproc) ;
+        quot_i= ( (imax-1) / iproc) ;
+        quot_j= ( (jmax-1) / jproc) ;
 		*omg_i=1;
 		*omg_j=1;
-		if(res_i > 0){
-			*il = (imax/iproc+1) * (*omg_i)-1;
-			*ir = (imax/iproc+1) * ((*omg_i)+1)-1;
-			res_i--;
+		if( *omg_i <= res_i ){
+			*il = (quot_i+1) * ((*omg_i)-1)+1;
+			*ir = (quot_i+1) * (*omg_i)+1;
 		}
 		else{
-			*il = (imax/iproc) * (*omg_i)-1;
-			*ir = (imax/iproc) * ((*omg_i)+1)-1;
+			*il = ((quot_i+1) * res_i+1)+((*omg_i-res_i-1)*quot_i);
+			*ir = ((quot_i+1) * res_i+1)+((*omg_i-res_i)*quot_i);
 		}
-		if( res_j > 0){
-			*jb = (jmax/jproc+1) * (*omg_i)-1;
-			*jt = (jmax/jproc+1) * (*omg_i)-1;
-			res_j--;
+		if( *omg_j <= res_j ){
+			*jb = (quot_j+1) * ((*omg_j)-1)+1;
+			*jt = (quot_j+1) * (*omg_j)+1;
 		}
 		else{
-			*jb = jmax/jproc * (*omg_i)-1;
-			*jt = imax/iproc * (*omg_i)-1;
+			*jb = ((quot_j+1) * res_j+1)+((*omg_j-res_j-1)*quot_j);
+			*jt = ((quot_j+1) * res_j+1)+((*omg_j-res_j)*quot_j);
 		}
+        
 		*rank_l = MPI_PROC_NULL ;
 		*rank_r = *myrank + 1 ;
 		*rank_t = *myrank + iproc;
 		*rank_b = MPI_PROC_NULL ;
         
+        
+/*        printf("i=%d omg_i=%d omg_j=%d rank_l=%d rank_r=%d  rank_b=%d rank_t=%d\n" ,0,*omg_i, *omg_j, *rank_l, *rank_r, *rank_b, *rank_t ) ;*/
+        
+        
+        
 		for (i = 1; i < num_proc; ++i) {
 			t_omg_i= (i%iproc) + 1;
 			t_omg_j = (i/iproc) + 1;
-			if(res_i > 0){
-				t_il = (imax/iproc+1) * t_omg_i-1;
-				t_ir = (imax/iproc+1) * (t_omg_i+1)-1;
-				res_i--;
-			}
-			else{
-				t_il = (imax/iproc) * t_omg_i-1;
-				t_ir = (imax/iproc) * (t_omg_i+1)-1;
-			}
-			if( res_j > 0){
-				t_jb = (jmax/jproc+1) * t_omg_i-1;
-				t_jt = (jmax/jproc+1) * t_omg_i-1;
-				res_j--;
-			}
-			else{
-				t_jb = jmax/jproc * t_omg_i-1;
-				t_jt = imax/iproc * t_omg_i-1;
-			}
+			
+
+            if( t_omg_i <= res_i ){
+                t_il = (quot_i+1) * ((t_omg_i)-1)+1;
+                t_ir = (quot_i+1) * (t_omg_i)+1;
+            }
+            else{
+                t_il = ((quot_i+1) * res_i+1)+((t_omg_i-res_i-1)*quot_i);
+                t_ir = ((quot_i+1) * res_i+1)+((t_omg_i-res_i)*quot_i);
+            }
+            if( t_omg_j <= res_j ){
+                t_jb = (quot_j+1) * ((t_omg_j)-1)+1;
+                t_jt = (quot_j+1) * (t_omg_j)+1;
+            }
+            else{
+                t_jb = ((quot_j+1) * res_j+1)+((t_omg_j-res_j-1)*quot_j);
+                t_jt = ((quot_j+1) * res_j+1)+((t_omg_j-res_j)*quot_j);
+            }
             
+            
+
             
             
             if (t_omg_i == 1){
@@ -150,6 +159,9 @@ void init_parallel(
                 t_rank_b = i - iproc;
 			}
             
+/*            printf("i=%d omg_i=%d omg_j=%d rank_l=%d rank_r=%d  rank_b=%d rank_t=%d\n" ,i,t_omg_i, t_omg_j,t_rank_l,t_rank_r, t_rank_b, t_rank_t ) ;*/
+
+            
 			MPI_Send(&t_omg_i, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
 			MPI_Send(&t_omg_j, 1, MPI_INT, i, 2, MPI_COMM_WORLD);
 			MPI_Send(&t_il, 1, MPI_INT, i, 3, MPI_COMM_WORLD);
@@ -175,7 +187,8 @@ void init_parallel(
 		MPI_Recv(rank_b, 1, MPI_INT, 0, 9, MPI_COMM_WORLD, &status);
 		MPI_Recv(rank_t, 1, MPI_INT, 0, 10, MPI_COMM_WORLD, &status);
 	}
-	MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
+
 }
 
 void pressure_comm(
