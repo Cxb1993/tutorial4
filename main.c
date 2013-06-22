@@ -100,6 +100,7 @@ int main(int argc, char** argv){
     int omg_j;
     int num_proc;
     int chunk;
+    MPI_Status *status;
     int a,b ;
     
     
@@ -163,7 +164,7 @@ int main(int argc, char** argv){
         while(it < itermax && res > eps){
             /*	Perform a SOR iteration according to (18) using the*/
             /*	provided function and retrieve the residual res*/
-            sor( omg, dx, dy, ir, il, jt, jb, P, RS, myrank, imax, jmax);
+            sor( omg, dx, dy, ir, il, jt, jb, rank_l, rank_r, rank_b, rank_t, bufSend, bufRecv, status, chunk , P, RS, myrank, imax, jmax);
             /*	it := it + 1*/
             it++;
         }
