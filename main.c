@@ -1,5 +1,5 @@
 #include "helper.h"
-#include "stddef.h" 
+#include "stddef.h"
 #include "visual.h"
 #include "init.h"
 #include "boundary_val.h"
@@ -105,23 +105,24 @@ int main(int argc, char** argv){
     
     MPI_Init( &argc, &argv );                    /* execute n processes      */
     MPI_Comm_size( MPI_COMM_WORLD, &num_proc);     /* asking for the number of processes  */
-
+    
     /* read the program configuration file using read_parameters()*/
     read_parameters("cavity100.dat", &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, &iproc, &jproc);
-
+    
     init_parallel(iproc, jproc, imax, jmax, &myrank, &il, &ir, &jb, &jt, &rank_l, &rank_r, &rank_b, &rank_t, &omg_i, &omg_j, num_proc);
     
     /*calculating max for chunk size*/
-
+    
     a = jb - jt + 5 ;
     b = ir - il + 5 ;
-
+    
     if (a>b) chunk = a;
     else chunk = b ;
-   bufSend = (double *)  malloc((size_t)( chunk * sizeof( double )));
-   bufRecv = (double *)  malloc((size_t)( chunk * sizeof( double )));
-
-
+    
+    bufSend = (double *)  malloc((size_t)( chunk * sizeof( double )));
+    bufRecv = (double *)  malloc((size_t)( chunk * sizeof( double )));
+    
+    
     /* set up the matrices (arrays) needed using the matrix() command*/
     U = matrix(il-2, ir+1, jb-1, jt+1);
     V = matrix(il-1, ir+1, jb-2, jt+1);
@@ -129,8 +130,8 @@ int main(int argc, char** argv){
     RS = matrix(il, ir, jb, jt);
     F = matrix(il-2, ir+1, jb-1, jt+1);
     G = matrix(il-1, ir+1, jb-2, jt+1);
-
-
+    
+    
     /* initialize current time and time step*/
     t = 0;
     n = 0;
@@ -187,5 +188,5 @@ int main(int argc, char** argv){
     free_matrix(G, il-1, ir+1, jb-2, jt+1);
     Programm_Stop("finished its work");
     MPI_Finalize();
-    return -1;
+    return 0;
 }

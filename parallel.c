@@ -102,10 +102,6 @@ void init_parallel(
 		*rank_b = MPI_PROC_NULL ;
         
         
-/*        printf("i=%d omg_i=%d omg_j=%d rank_l=%d rank_r=%d  rank_b=%d rank_t=%d\n" ,0,*omg_i, *omg_j, *rank_l, *rank_r, *rank_b, *rank_t ) ;*/
-        
-        
-        
 		for (i = 1; i < num_proc; ++i) {
 			t_omg_i= (i%iproc) + 1;
 			t_omg_j = (i/iproc) + 1;
@@ -127,9 +123,6 @@ void init_parallel(
                 t_jb = ((quot_j+1) * res_j+1)+((t_omg_j-res_j-1)*quot_j);
                 t_jt = ((quot_j+1) * res_j+1)+((t_omg_j-res_j)*quot_j);
             }
-            
-            
-
             
             
             if (t_omg_i == 1){
@@ -159,8 +152,6 @@ void init_parallel(
                 t_rank_b = i - iproc;
 			}
             
-/*            printf("i=%d omg_i=%d omg_j=%d rank_l=%d rank_r=%d  rank_b=%d rank_t=%d\n" ,i,t_omg_i, t_omg_j,t_rank_l,t_rank_r, t_rank_b, t_rank_t ) ;*/
-
             
 			MPI_Send(&t_omg_i, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
 			MPI_Send(&t_omg_j, 1, MPI_INT, i, 2, MPI_COMM_WORLD);
@@ -173,7 +164,6 @@ void init_parallel(
 			MPI_Send(&t_rank_b, 1, MPI_INT, i, 9, MPI_COMM_WORLD);
 			MPI_Send(&t_rank_t, 1, MPI_INT, i, 10, MPI_COMM_WORLD);
 		}
-        
 	}
 	else{
 		MPI_Recv(omg_i, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
@@ -188,7 +178,6 @@ void init_parallel(
 		MPI_Recv(rank_t, 1, MPI_INT, 0, 10, MPI_COMM_WORLD, &status);
 	}
     MPI_Barrier(MPI_COMM_WORLD);
-
 }
 
 void pressure_comm(
