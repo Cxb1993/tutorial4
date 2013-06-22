@@ -111,6 +111,9 @@ int main(int argc, char** argv){
     
     init_parallel(iproc, jproc, imax, jmax, &myrank, &il, &ir, &jb, &jt, &rank_l, &rank_r, &rank_b, &rank_t, &omg_i, &omg_j, num_proc);
     
+    
+    printf("myrank=%d omg_i=%d omg_j=%d rank_l=%d rank_r=%d  rank_b=%d rank_t=%d\n" , myrank, omg_i, omg_j, rank_l, rank_r, rank_b, rank_t ) ;
+
     /*calculating max for chunk size*/
     
     a = jb - jt + 5 ;
@@ -140,7 +143,6 @@ int main(int argc, char** argv){
     init_uvp(UI, VI, PI,  il, ir, jb, jt, U, V, P);
     
     
-    // il, ir, jb, jt, omg_i, omg_j
     /* ----------------------------------------------------------------------- */
     /*                             Performing the main loop                    */
     /* ----------------------------------------------------------------------- */
@@ -170,8 +172,9 @@ int main(int argc, char** argv){
         /*	Output of u; v; p values for visualization, if necessary*/
         
         n_div=(dt_value/dt);
-        if(n % n_div == 0){
-            void output uvp( U, V, P, il, ir, jb, jt, omg_i, omg_j,argv[1],n,dx,dy)        }
+        if (n % n_div == 0) {
+            output_uvp( U, V, P, il, ir, jb, jt, omg_i, omg_j,argv[1],n,dx,dy);
+        }
         /*	t := t + dt*/
         t = t + dt;
         /*	n := n + 1*/
