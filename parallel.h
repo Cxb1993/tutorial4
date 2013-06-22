@@ -64,4 +64,4 @@ void uv_comm(
              double *bufSend,
              double *bufRecv,
              MPI_Status *status,
-             int chunk);
+             int chunk );

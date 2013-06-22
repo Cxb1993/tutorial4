@@ -105,7 +105,7 @@ int main( int argc, char *argv[] )
 	/* jmax */
 	/* fscanf ignores new line character. this leads to problems with fread if 
            the first byte is \n.
-        /* Therefore we use fgets to read the file linewise */
+         Therefore we use fgets to read the file linewise */
         if( fgets(str,100,fh) == 0 )
             FILE_ERROR( szFilename, "Error: can't read the file %s" ); 
         if( sscanf( str, "%d\n", &(ArrJmax[i])) == 0 )  

@@ -82,8 +82,10 @@ int main(int argc, char** argv){
     double **P;		/* pressure*/
     double **RS;		/* right-hand side for pressure iteration*/
     double **F,**G;     /* F;G*/
-    double *bufSend;
-    double *bufRecv ;
+    /*
+     double *bufSend;
+     double *bufRecv ;
+     */
     int n_div;
     int iproc;
     int jproc;
@@ -112,20 +114,22 @@ int main(int argc, char** argv){
     
     init_parallel(iproc, jproc, imax, jmax, &myrank, &il, &ir, &jb, &jt, &rank_l, &rank_r, &rank_b, &rank_t, &omg_i, &omg_j, num_proc);
     
+    MPI_Barrier(MPI_COMM_WORLD);
+    printf("myrank=%d omg_i=%d omg_j=%d rank_l=%d rank_r=%d  rank_b=%d rank_t=%d\n il=%d ir=%d jb=%d jt=%d\n" , myrank, omg_i, omg_j, rank_l, rank_r, rank_b, rank_t, il,ir,jb,jt ) ;
     
-    printf("myrank=%d omg_i=%d omg_j=%d rank_l=%d rank_r=%d  rank_b=%d rank_t=%d\n" , myrank, omg_i, omg_j, rank_l, rank_r, rank_b, rank_t ) ;
-
     /*calculating max for chunk size*/
     
-    a = jb - jt + 5 ;
-    b = ir - il + 5 ;
+    a = jb - jt + 4 ;
+    b = ir - il + 4 ;
     
     if (a>b) chunk = a;
     else chunk = b ;
     
+    double *bufSend;
+    double *bufRecv ;
+    
     bufSend = (double *)  malloc((size_t)( chunk * sizeof( double )));
     bufRecv = (double *)  malloc((size_t)( chunk * sizeof( double )));
-    
     
     /* set up the matrices (arrays) needed using the matrix() command*/
     U = matrix(il-2, ir+1, jb-1, jt+1);
@@ -148,41 +152,39 @@ int main(int argc, char** argv){
     /*                             Performing the main loop                    */
     /* ----------------------------------------------------------------------- */
     
+    /*	Select dt*/
     while (t<=t_end){
-        /*	Select dt*/
+        
         calculate_dt(Re, tau, &dt, dx, dy, il, ir, jb, jt, U, V, num_proc, myrank);
-        /*	Set boundary values for u and v according to (14),(15)*/
         boundaryvalues(il, ir, jb, jt, imax, jmax, U, V);
-        /*	Compute F(n) and G(n) according to (9),(10),(17)*/
         calculate_fg(Re, GX, GY, alpha, dt, dx, dy, il, ir, jb, jt, imax, jmax, U, V ,F , G);
-        /*	Compute the right-hand side rs of the pressure equation (11)*/
         calculate_rs(dt, dx, dy, il, ir, jb, jt, F, G, RS);
-        /*	Set it := 0*/
         res = 1.0;
         it = 0;
-        /*	While it < itmax and res > eps*/
-        while(it < itermax && res > eps){
-            /*	Perform a SOR iteration according to (18) using the*/
-            /*	provided function and retrieve the residual res*/
-            sor( omg, dx, dy, ir, il, jt, jb, rank_l, rank_r, rank_b, rank_t, bufSend, bufRecv, status, chunk , P, RS, myrank, imax, jmax);
-            /*	it := it + 1*/
+        
+        /*while(it < itermax && res > eps){
+            sor( omg, dx, dy, ir, il, jt, jb, rank_l, rank_r, rank_b, rank_t, bufSend, bufRecv, status, chunk , P, RS, myrank, imax, jmax,&res);
+            printf("myrank=%d ,Residual=%f\n",myrank,res);
             it++;
-        }
-        /*	Compute u(n+1) and v(n+1) according to (7),(8)*/
+        }*/
+
         calculate_uv(dt, dx, dy, il, ir, jb, jt, U, V, F, G, P);
-        /*	Output of u; v; p values for visualization, if necessary*/
         
-        n_div=(dt_value/dt);
+        
+       uv_comm(U,V,il,ir,jb,jt,rank_l,rank_r,rank_b,rank_t,bufSend, bufRecv, status, chunk);
+        
+/*       n_div=(dt_value/dt);
         if (n % n_div == 0) {
-            output_uvp( U, V, P, il, ir, jb, jt, omg_i, omg_j,argv[1],n,dx,dy);
+            output_uvp( U, V, P, il, ir, jb, jt, omg_i, omg_j,"cavity",n,dx,dy, myrank);
         }
-        /*	t := t + dt*/
+  */  
         t = t + dt;
-        /*	n := n + 1*/
         n++;
-        
+        printf("my rank=%d, time=%f ,time_step=%d\n",myrank,t,n);
     }
     
+    free(bufSend);
+    free(bufRecv);
     /* Destroy memory allocated*/
     free_matrix(U, il-2, ir+1, jb-1, jt+1);
     free_matrix(V, il-1, ir+1, jb-2, jt+1);
@@ -191,6 +193,6 @@ int main(int argc, char** argv){
     free_matrix(F, il-2, ir+1, jb-1, jt+1);
     free_matrix(G, il-1, ir+1, jb-2, jt+1);
     Programm_Stop("finished its work");
-    MPI_Finalize();
+    
     return 0;
 }

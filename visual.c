@@ -16,13 +16,13 @@ void output_uvp(
                 char *szProblem,
                 int timeStepNumber,
                 double dx,
-                double dy
-                ){
+                double dy,
+                int rank){
     
-    int i,j;
+    int i,j, index;
     char szFileName[80];
     FILE *fp=NULL;
-    sprintf( szFileName, "%s.%i.%i_%i.vtk", szProblem, timeStepNumber, omg_i, omg_j  );
+    sprintf( szFileName, "%s.%i.%i.vtk", szProblem, rank, timeStepNumber);
     fp = fopen( szFileName, "w");
     if( fp == NULL )
     {

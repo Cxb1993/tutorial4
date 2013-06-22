@@ -30,7 +30,8 @@ void sor(
          double **RS,
          int myrank,
          int imax,
-         int jmax
+         int jmax,
+         double *res
          );
 
 

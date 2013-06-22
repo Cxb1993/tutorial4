@@ -35,8 +35,8 @@ void output_uvp(
                 char *szProblem,
                 int timeStepNumber,
                 double dx,
-                double dy
-);
+                double dy,
+int rank);
 
 void write_vtkFile(const char *szProblem,
                    int    timeStepNumber,

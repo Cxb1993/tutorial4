@@ -23,14 +23,15 @@ void sor(
          double **RS,
          int myrank,
          int imax,
-         int jmax
+         int jmax,
+         double *res
          ) {
     
     int i,j;
     double rloc;
     double coeff = omg/(2.0*(1.0/(dx*dx)+1.0/(dy*dy)));
-    double glob_res  ;
     
+    double glob_res;
     
     /*Boundary values*/
     
@@ -101,6 +102,6 @@ void sor(
         
         
     }
-    
+    *res=glob_res;
     
 }
