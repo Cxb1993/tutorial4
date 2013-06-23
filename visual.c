@@ -48,7 +48,7 @@ void output_uvp(
     }
     
     fprintf(fp,"\n");
-    fprintf(fp,"CELL_DATA %i \n", ((imax)*(jmax)) );
+    fprintf(fp,"CELL_DATA %i \n", ((ir-il)*(jt-jb)) );
     fprintf(fp, "SCALARS pressure float 1 \n");
     fprintf(fp, "LOOKUP_TABLE default \n");
     for(j = jb+1; j <= jt; j++) {
@@ -105,8 +105,8 @@ void write_vtkPointCoordinates(
                                double dy,
                                int imax,
                                int jmax) {
-    double originX = 0.0;
-    double originY = 0.0;
+    double originX = il*dx;
+    double originY = jb*dy;
     
     int i = 0;
     int j = 0;

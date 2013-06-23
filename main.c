@@ -139,10 +139,10 @@ int main(int argc, char** argv){
     /* create the initial setup init_uvp()*/
     init_uvp(UI, VI, PI,  il, ir, jb, jt, U, V, P);
     
-    
+    if (myrank==0){
     write_matrix("matrix.dat",U,il,ir+1,jb,jt+1,xlength,ylength,1,0);
     write_matrix("matrix.dat",V,il,ir+1,jb,jt+1,xlength,ylength,0,0);
-    
+    }
     
     
     /* ----------------------------------------------------------------------- */
@@ -162,7 +162,7 @@ int main(int argc, char** argv){
         while(it < itermax && res > eps){
             sor( omg, dx, dy, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, bufSend, bufRecv, status, chunk , P, RS, myrank, imax, jmax,&res,omg_i,omg_j,iproc,jproc);
             if (myrank==0){
-                printf("residual=%f\n",res);
+/*                printf("residual=%f\n",res);*/
             }
             it++;
         }
@@ -188,7 +188,6 @@ int main(int argc, char** argv){
         write_matrix("matrix.dat",U,il,ir+1,jb,jt+1,xlength,ylength,0,0);
         
         write_matrix("matrix.dat",V,il,ir+1,jb,jt+1,xlength,ylength,0,0);
-        printf("here is outside\n");
     }
     
     
