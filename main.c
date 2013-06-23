@@ -82,8 +82,8 @@ int main(int argc, char** argv){
     double **P;		/* pressure*/
     double **RS;		/* right-hand side for pressure iteration*/
     double **F,**G;     /* F;G*/
-     double *bufSend;
-     double *bufRecv ;
+    double *bufSend;
+    double *bufRecv ;
     int n_div;
     int iproc;
     int jproc;
@@ -102,7 +102,7 @@ int main(int argc, char** argv){
     int chunk;
     MPI_Status *status;
     int a,b ;
-    
+    int i,j;
     
     MPI_Init( &argc, &argv );                    /* execute n processes      */
     MPI_Comm_size( MPI_COMM_WORLD, &num_proc);     /* asking for the number of processes  */
@@ -111,9 +111,6 @@ int main(int argc, char** argv){
     read_parameters("cavity100.dat", &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, &iproc, &jproc);
     
     init_parallel(iproc, jproc, imax, jmax, &myrank, &il, &ir, &jb, &jt, &rank_l, &rank_r, &rank_b, &rank_t, &omg_i, &omg_j, num_proc);
-    
-    MPI_Barrier(MPI_COMM_WORLD);
-    printf("myrank=%d omg_i=%d omg_j=%d rank_l=%d rank_r=%d  rank_b=%d rank_t=%d\n il=%d ir=%d jb=%d jt=%d\n" , myrank, omg_i, omg_j, rank_l, rank_r, rank_b, rank_t, il,ir,jb,jt ) ;
     
     /*calculating max for chunk size*/
     
@@ -142,6 +139,9 @@ int main(int argc, char** argv){
     /* create the initial setup init_uvp()*/
     init_uvp(UI, VI, PI,  il, ir, jb, jt, U, V, P);
     
+    /*
+     write_matrix("matrix.dat",F,il,ir,jb,jt,xlength,ylength,1,0);
+     */
     
     /* ----------------------------------------------------------------------- */
     /*                             Performing the main loop                    */
@@ -153,23 +153,28 @@ int main(int argc, char** argv){
         calculate_dt(Re, tau, &dt, dx, dy, il, ir, jb, jt, U, V, num_proc, myrank);
         boundaryvalues(il, ir, jb, jt, imax, jmax, U, V);
         calculate_fg(Re, GX, GY, alpha, dt, dx, dy, il, ir, jb, jt, imax, jmax, U, V ,F , G);
+        /*        
+         if (myrank==0){
+         write_matrix("matrix.dat",F,il,ir,jb,jt,xlength,ylength,0,0);
+         }
+         */
         calculate_rs(dt, dx, dy, il, ir, jb, jt, F, G, RS);
         res = 1.0;
         it = 0;
         while(it < itermax && res > eps){
             sor( omg, dx, dy, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, bufSend, bufRecv, status, chunk , P, RS, myrank, imax, jmax,&res);
-            printf("myrank=%d ,Residual=%f\n",myrank,res);
             it++;
         }
         calculate_uv(dt, dx, dy, il, ir, jb, jt, U, V, F, G, P);
-    
         
-       uv_comm(U,V,il,ir,jb,jt,rank_l,rank_r,rank_b,rank_t,bufSend, bufRecv, status, chunk);
         
-       n_div=(dt_value/dt);
+        uv_comm(U,V,il,ir,jb,jt,rank_l,rank_r,rank_b,rank_t,bufSend, bufRecv, status, chunk);
+        
+        n_div=(dt_value/dt);
         if (n % n_div == 0) {
             output_uvp( U, V, P, il, ir, jb, jt, omg_i, omg_j,"cavity",n,dx,dy, myrank);
         }
+        
         t = t + dt;
         n++;
     }

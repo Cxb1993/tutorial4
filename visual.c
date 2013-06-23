@@ -22,7 +22,7 @@ void output_uvp(
     int i,j, index;
     char szFileName[80];
     FILE *fp=NULL;
-    sprintf( szFileName, "%s.%i.%i.vtk", szProblem, rank, timeStepNumber);
+    sprintf( szFileName, "%s.%i.%i.vtk", szProblem, rank, timeStepNumber );
     fp = fopen( szFileName, "w");
     if( fp == NULL )
     {

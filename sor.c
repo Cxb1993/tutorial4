@@ -41,7 +41,7 @@ void sor(
             /*U values around left boundary*/
             P[il-1][j] = P[il][j];
         }
-        else if( ir == imax){
+        if( ir == imax){
             /*U values around right boundary*/
             P[ir+1][j] = P[ir][j];
         }
@@ -53,7 +53,7 @@ void sor(
             /*P values around bottom boundary*/
             P[i][jb-1] = P[i][jb];
         }
-        else if( jt == jmax){
+        if( jt == jmax){
             /*P values around top boundary*/
             P[i][jt+1] = P[i][jt];
         }
@@ -92,7 +92,7 @@ void sor(
         
         glob_res = glob_res/(jmax*imax) ;
         glob_res = sqrt(glob_res) ;
-        printf("my rank = %i, global = %f\n", myrank, glob_res);
+        /*printf("my rank = %i, global = %f\n", myrank, glob_res);*/
     }
     MPI_Bcast (&glob_res,1,MPI_DOUBLE,0,MPI_COMM_WORLD) ;
     *res=glob_res;

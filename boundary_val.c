@@ -29,7 +29,7 @@ void boundaryvalues(
             /*V velocities on left boundary (interpolated value)*/
             V[il-1][j]=-1*V[il][j];
         }
-        else if( ir == imax){
+        if( ir == imax){
             /*U velocities on right boundary*/
             U[ir][j] = 0;
             /*V velocities on right boundary (interpolated value)*/
@@ -47,7 +47,7 @@ void boundaryvalues(
             U[i][jb-1]=-1*U[i][jb];
             
         }
-        else if( jt == jmax){
+        if( jt == jmax){
             /*V velocities on top boundary*/
             V[i][jt] = 0;
             /*U velocities on top boundary (interpolated value)*/

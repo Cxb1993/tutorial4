@@ -111,7 +111,7 @@ void calculate_fg(
             /*F values on left boundary*/
             F[il-1][j] = U[il-1][j];
         }
-        else if( ir == imax){
+        if( ir == imax){
             /*F values on right boundary*/
             F[ir][j] = U[ir][j];
         }
@@ -123,7 +123,7 @@ void calculate_fg(
             /*G values on bottom boundary*/
             G[i][jb-1] = V[i][jb-1];
         }
-        else if( jt == jmax){
+        if( jt == jmax){
             /*G values on top boundary*/
             G[i][jt] = V[i][jt];
         }

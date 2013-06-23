@@ -97,8 +97,18 @@ void init_parallel(
 		}
         
 		*rank_l = MPI_PROC_NULL ;
+        if(iproc>1){
 		*rank_r = *myrank + 1 ;
-		*rank_t = *myrank + iproc;
+        }
+        else{
+        *rank_r = MPI_PROC_NULL ;
+        }
+		if(jproc>1){
+        *rank_t = *myrank + iproc;
+        }
+        else{
+            *rank_t = MPI_PROC_NULL ;
+        }
 		*rank_b = MPI_PROC_NULL ;
         
         
