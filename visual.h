@@ -36,7 +36,9 @@ void output_uvp(
                 int timeStepNumber,
                 double dx,
                 double dy,
-int rank);
+                int rank,
+                int imax,
+                int jmax);
 
 void write_vtkFile(const char *szProblem,
                    int    timeStepNumber,
@@ -68,7 +70,9 @@ void write_vtkHeader(
                      int jb,
                      int jt,
                      double dx,
-                     double dy
+                     double dy,
+                     int imax,
+                     int jmax
                      );
 
 /**
@@ -89,7 +93,9 @@ void write_vtkPointCoordinates(
                                int jb,
                                int jt,
                                double dx,
-                               double dy
-);
+                               double dy,
+                               int imax,
+                               int jmax
+                               );
 
 #endif

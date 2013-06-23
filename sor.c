@@ -24,7 +24,11 @@ void sor(
          int myrank,
          int imax,
          int jmax,
-         double *res
+         double *res,
+         int omg_i,
+         int omg_j,
+         int iproc,
+         int jproc
          ) {
     
     int i,j;
@@ -33,32 +37,6 @@ void sor(
     
     double glob_res;
     
-    /*Boundary values*/
-    
-    for (j = jb; j <= jt; j++){
-        
-        if ( (il-1) == 0 ){
-            /*U values around left boundary*/
-            P[il-1][j] = P[il][j];
-        }
-        if( ir == imax){
-            /*U values around right boundary*/
-            P[ir+1][j] = P[ir][j];
-        }
-    }
-    
-    for (i = il; i <= ir; i++){
-        
-        if ( (jb-1) == 0 ){
-            /*P values around bottom boundary*/
-            P[i][jb-1] = P[i][jb];
-        }
-        if( jt == jmax){
-            /*P values around top boundary*/
-            P[i][jt+1] = P[i][jt];
-        }
-    }
-    
     
     
     
@@ -66,21 +44,48 @@ void sor(
     
     
     
-    for(j = jb; j <= jt; j++) {
-        for(i = il; i<=ir; i++) {
+    for(j = jb+1; j <= jt; j++) {
+        for(i = il+1; i<=ir; i++) {
             P[i][j] = (1.0-omg)*P[i][j]
             + coeff*(( P[i+1][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]+P[i][j-1])/(dy*dy) - RS[i][j]);
         }
     }
     
+    /*Boundary values*/
+    
+    if(omg_i==1){
+        for (j = jb; j <= jt+1; j++){
+            /*U values around left boundary*/
+            P[il][j] = P[il+1][j];
+        }
+    }
+    if(omg_i==iproc){
+        for (j = jb; j <= jt+1; j++){
+            /*U values around left boundary*/
+            P[ir+1][j] = P[ir][j];
+        }
+    }
+    
+    if(omg_j==1){
+        for (i = il; i <= ir+1; i++){
+            /*U values around left boundary*/
+            P[i][jb] = P[i][jb+1];
+        }
+    }
+    if(omg_j==jproc){
+        for (i = il; i <= ir+1; i++){
+            /*U values around left boundary*/
+            P[i][jt+1] = P[i][jt];
+        }
+    }
+    
     /*Passing the pressure values*/
-    pressure_comm(P,il,ir,jb,jt ,rank_l,rank_r,rank_b,rank_t,bufSend,bufRecv,status,chunk );
-    
-    
+    pressure_comm(P,il,ir,jb,jt ,rank_l,rank_r,rank_b,rank_t,bufSend,bufRecv,status,chunk);
+        
     /* compute the residual */
     rloc = 0;
-    for(j = jb; j <= jt; j++) {
-        for(i = il; i <= ir; i++) {
+    for(j = jb+1; j <= jt; j++) {
+        for(i = il+1; i <= ir; i++) {
             rloc += ( (P[i+1][j]-2.0*P[i][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]-2.0*P[i][j]+P[i][j-1])/(dy*dy) - RS[i][j])*
             ( (P[i+1][j]-2.0*P[i][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]-2.0*P[i][j]+P[i][j-1])/(dy*dy) - RS[i][j]);
         }

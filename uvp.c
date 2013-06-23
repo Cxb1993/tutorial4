@@ -107,9 +107,9 @@ void calculate_fg(
     /*Set boundary values along the columns*/
     for (j = jb; j <= jt; j++){
         
-        if ( (il-1) == 0 ){
+        if ( (il) == 0 ){
             /*F values on left boundary*/
-            F[il-1][j] = U[il-1][j];
+            F[il][j] = U[il][j];
         }
         if( ir == imax){
             /*F values on right boundary*/
@@ -119,9 +119,9 @@ void calculate_fg(
     
     /*Set boundary values along the rows*/
     for (i = il; i <= ir; i++){
-        if ( (jb-1) == 0 ){
+        if ( (jb) == 0 ){
             /*G values on bottom boundary*/
-            G[i][jb-1] = V[i][jb-1];
+            G[i][jb] = V[i][jb];
         }
         if( jt == jmax){
             /*G values on top boundary*/
@@ -289,14 +289,16 @@ void calculate_uv(
     int j;
     /*Calculate the new velocity U according to the formula above*/
     for(i = (il-1); i <= ir; i++){
-        for(j = jb; j <= jt; j++){
-            U[i][j] = F[i][j]-(dt/dx)*(P[i+1][j]-P[i][j]);
-        }
-    }
-    /*Calculate the new velocity V according to the formula above*/
-    for(i = il; i <= ir; i++){
         for(j = (jb-1); j <= jt; j++){
-            V[i][j] = G[i][j]-(dt/dy)*(P[i][j+1]-P[i][j]);
+            if (j!=jb-1){
+                U[i][j] = F[i][j]-(dt/dx)*(P[i+1][j]-P[i][j]);
+            }
+            if (i!=il-1){
+                V[i][j] = G[i][j]-(dt/dy)*(P[i][j+1]-P[i][j]);
+            }
+            
+            
+            
         }
     }
 }

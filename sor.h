@@ -31,7 +31,11 @@ void sor(
          int myrank,
          int imax,
          int jmax,
-         double *res
+         double *res,
+         int omg_i,
+         int omg_j,
+         int iproc,
+         int jproc
          );
 
 

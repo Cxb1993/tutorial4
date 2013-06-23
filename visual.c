@@ -17,7 +17,9 @@ void output_uvp(
                 int timeStepNumber,
                 double dx,
                 double dy,
-                int rank){
+                int rank,
+                int imax,
+                int jmax){
     
     int i,j ;
     char szFileName[80];
@@ -32,25 +34,25 @@ void output_uvp(
         return;
     }
     
-    write_vtkHeader( fp, il, ir, jb, jt, dx, dy);
-    write_vtkPointCoordinates(fp, il, ir, jb, jt, dx, dy);
+    write_vtkHeader( fp, il, ir, jb, jt, dx, dy,imax,jmax);
+    write_vtkPointCoordinates(fp, il, ir, jb, jt, dx, dy,imax,jmax);
     
-    fprintf(fp,"POINT_DATA %i \n", (ir-(il-1)+1)*(jt-(jb-1)+1) );
+    fprintf(fp,"POINT_DATA %i \n", (imax+1)*(jmax+1) );
 	
     fprintf(fp,"\n");
     fprintf(fp, "VECTORS velocity float\n");
-    for(j = jb-1; j <=jt; j++) {
-        for(i = il-1; i <=ir; i++) {
+    for(j = 0; j < jmax+1; j++) {
+        for(i = 0; i < imax+1; i++) {
             fprintf(fp, "%f %f 0\n", (U[i][j] + U[i][j+1]) * 0.5, (V[i][j] + V[i+1][j]) * 0.5 );
         }
     }
     
     fprintf(fp,"\n");
-    fprintf(fp,"CELL_DATA %i \n", ((ir-il+1)*(jt-jb+1)) );
+    fprintf(fp,"CELL_DATA %i \n", ((imax)*(jmax)) );
     fprintf(fp, "SCALARS pressure float 1 \n");
     fprintf(fp, "LOOKUP_TABLE default \n");
-    for(j = jb; j <= jt; j++) {
-        for(i = il; i <= ir; i++) {
+    for(j = 1; j < jmax+1; j++) {
+        for(i = 1; i < imax+1; i++) {
             fprintf(fp, "%f\n", P[i][j] );
         }
     }
@@ -71,8 +73,9 @@ void write_vtkHeader(
                      int jb,
                      int jt,
                      double dx,
-                     double dy
-                     ) {
+                     double dy,
+                     int imax,
+                     int jmax) {
     if( fp == NULL )
     {
         char szBuff[80];
@@ -86,8 +89,8 @@ void write_vtkHeader(
     fprintf(fp,"ASCII\n");
     fprintf(fp,"\n");
     fprintf(fp,"DATASET STRUCTURED_GRID\n");
-    fprintf(fp,"DIMENSIONS  %i %i 1 \n", ir-(il-1)+1, jt-(jb-1)+1);
-    fprintf(fp,"POINTS %i float\n", (ir-(il-1)+1)*(jt-(jb-1)+1) );
+    fprintf(fp,"DIMENSIONS  %i %i 1 \n", imax+1, jmax+1);
+    fprintf(fp,"POINTS %i float\n", (imax+1)*(jmax+1) );
     fprintf(fp,"\n");
 }
 
@@ -99,15 +102,17 @@ void write_vtkPointCoordinates(
                                int jb,
                                int jt,
                                double dx,
-                               double dy) {
-    double originX = (il-1)*dx;
-    double originY = (jb-1)*dy;
+                               double dy,
+                               int imax,
+                               int jmax) {
+    double originX = 0.0;
+    double originY = 0.0;
     
     int i = 0;
     int j = 0;
     
-    for(j = 0; j <= jt-(jb-1); j++) {
-        for(i = 0; i <=ir-(il-1); i++) {
+    for(j = 0; j < jmax+1; j++) {
+        for(i = 0; i < imax+1; i++) {
             fprintf(fp, "%f %f 0\n", originX+(i*dx), originY+(j*dy) );
         }
     }
