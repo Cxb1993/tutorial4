@@ -19,7 +19,7 @@ void output_uvp(
                 double dy,
                 int rank){
     
-    int i,j, index;
+    int i,j ;
     char szFileName[80];
     FILE *fp=NULL;
     sprintf( szFileName, "%s.%i.%i.vtk", szProblem, rank, timeStepNumber );

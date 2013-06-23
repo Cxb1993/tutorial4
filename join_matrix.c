@@ -135,7 +135,7 @@ int main( int argc, char *argv[] )
     ResultingMatrix = matrix( imin, imax, jmin, jmax );
 
     /* read and write until the end of the first file is reached  */
-    while(1) //(j=0;j<nFiles;j++)
+    while(1) /*(j=0;j<nFiles;j++)*/
     {
 	/* initialize matrix  */
 	init_matrix( ResultingMatrix, imin, imax, jmin, jmax, 0.0 );   /* TODO NAN */

@@ -224,68 +224,65 @@ void read_double( const char* szFileName, const char* szVarName, double* pVariab
 /* ----------------------------------------------------------------------- */
 
 void write_matrix( const char* szFileName,       /* filename */
-		   double **m,		       /* matrix */
-		   int nrl,		       /* first column */
-		   int nrh,		       /* last column */
-		   int ncl,		       /* first row */
-		   int nch,		       /* last row */
-		 double xlength,	       /* size of the geometry in */
-                                               /* x-direction */
-		 double ylength,	       /* size of the geometry in */
-                                               /* y-direction  */
-		   int fFirst,  	       /* 0 == append, else overwrite*/
-                   int bPart )                 /* 0 for files corresponding to subdomains, 
-                                                  in this case xlength, ylenght, nrl, nrh, ncl, nch are written
-                                                  at the beginning of the file,   
-                                                  1 for whole region, no additional range information is written */         
+                  double **m,		       /* matrix */
+                  int nrl,		       /* first column */
+                  int nrh,		       /* last column */
+                  int ncl,		       /* first row */
+                  int nch,		       /* last row */
+                  double xlength,	       /* size of the geometry in */
+                  /* x-direction */
+                  double ylength,	       /* size of the geometry in */
+                  /* y-direction  */
+                  int fFirst,  	       /* 0 == append, else overwrite*/
+                  int bPart )                 /* 0 for files corresponding to subdomains,
+                                               in this case xlength, ylenght, nrl, nrh, ncl, nch are written
+                                               at the beginning of the file,
+                                               1 for whole region, no additional range information is written */
 {
-  printf("write matrix %s", szFileName);
-   int i, j;
-   FILE * fh = 0;
-   int nSize = (nrh-nrl+1) * (nch-ncl+1);
-   float *tmp = (float *)malloc( (size_t)(nSize * sizeof(float)));
-   int k = 0;
-
-   if( fFirst )				/* first call of the function ? */
-   {
-       fh = fopen( szFileName, "w");	/* overwrite file/write new file */
-       if( fh == NULL )			/* opening failed ? */
-       {
-	   char szBuff[80];
-	   sprintf( szBuff, "Outputfile %s cannot be created", szFileName );
-	   ERROR( szBuff );
-       }
-       
-       if(bPart==0)
-         fprintf( fh,"%f\n%f\n%d\n%d\n%d\n%d\n", xlength, ylength, nrl, nrh, ncl, nch );
-   }
-   else
-   {
-       fh = fopen( szFileName ,"a");	/* append to the file */
-       if( fh == NULL )			/* opening failed ? */
-       {
-	   char szBuff[80];
-	   sprintf( szBuff, "Outputfile %s cannot be opened", szFileName );
-	   ERROR( szBuff );
-       }
-   } 
-
-   for( j = ncl; j <= nch; j++)
-       for( i = nrl; i <= nrh; i++)
-	   tmp[k++] = (float)m[i][j];
-
-   fwrite( tmp, sizeof(float), nSize, fh);
-
-   if( fclose(fh) )
-   {
-       char szBuff[80];
-       sprintf( szBuff, "Outputfile %s cannot be closed", szFileName );
-       ERROR( szBuff );
-   };
-
-   free( tmp );
+	printf("write matrix %s\n", szFileName);
+	int i, j;
+	FILE * fh = 0;
+    
+	if( fFirst )				/* first call of the function ? */
+	{
+		fh = fopen( szFileName, "w");	/* overwrite file/write new file */
+		if( fh == NULL )			/* opening failed ? */
+		{
+			char szBuff[80];
+			sprintf( szBuff, "Outputfile %s cannot be created", szFileName );
+			ERROR( szBuff );
+		}
+        
+		if(bPart==0)
+			fprintf( fh,"%f\n%f\n%d\n%d\n%d\n%d\n", xlength, ylength, nrl, nrh, ncl, nch );
+	}
+	else
+	{
+		fh = fopen( szFileName ,"a");	/* append to the file */
+		if( fh == NULL )			/* opening failed ? */
+		{
+			char szBuff[80];
+			sprintf( szBuff, "Outputfile %s cannot be opened", szFileName );
+			ERROR( szBuff );
+		}
+	}
+	fprintf( fh,"dx:%f\n%f\n%d\n%d\n%d\n%d\n", xlength, ylength, nrl, nrh, ncl, nch );
+    
+	for( j = nch; j >= ncl; j--){
+		for( i = nrl; i <= nrh; i++){
+			fprintf(fh," %2.2f ", (float)m[i][j]);
+		}
+		fprintf(fh, "\n");
+	}
+    
+    
+	if( fclose(fh) )
+	{
+		char szBuff[80];
+		sprintf( szBuff, "Outputfile %s cannot be closed", szFileName );
+		ERROR( szBuff );
+	};
 }
-
 
 size_t read_matrix( FILE *fh,                    /* file handle */
 		    double **m,		         /* matrix */
