@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi.h>
-
+#include <string.h>
 /* CFD Lab - Worksheet 4 - Group 3
  * Camacho Barranco, Roberto
  * Gavranovic, Stefan
@@ -103,6 +103,8 @@ int main(int argc, char** argv){
     MPI_Status *status;
     int a,b ;
     int i,j;
+    char filen[100];
+    char rank[5];
     
     MPI_Init( &argc, &argv );                    /* execute n processes      */
     MPI_Comm_size( MPI_COMM_WORLD, &num_proc);     /* asking for the number of processes  */
@@ -120,8 +122,8 @@ int main(int argc, char** argv){
     if (a>b) chunk = a;
     else chunk = b ;
     
-    bufSend = (double *)  malloc((size_t)( chunk * sizeof( double )));
-    bufRecv = (double *)  malloc((size_t)( chunk * sizeof( double )));
+    bufSend = (double *)  malloc(( chunk * sizeof( double )));
+    bufRecv = (double *)  malloc(( chunk * sizeof( double )));
     
     /* set up the matrices (arrays) needed using the matrix() command*/
     U = matrix(il-2, ir+1, jb-1, jt+1);
@@ -131,6 +133,42 @@ int main(int argc, char** argv){
     F = matrix(il-2, ir+1, jb-1, jt+1);
     G = matrix(il-1, ir+1, jb-2, jt+1);
     
+    for ( i = 0 ; i<= chunk;  i++ )
+    {
+        bufSend[i] = 0;
+    }
+    
+    for ( i = il-2 ; i<= ir+1;  i++ )
+    {
+        for (j = jb-2; j<= jt+1; j++ )
+        {
+            if (i == il-2) {
+                U[i][j] = UI ;
+                F[i][j] = 0;
+            }
+            else if (j == jb-2){
+                V[i][j] = VI ;
+                G[i][j] = 0;
+            }
+            else{
+                U[i][j] = UI ;
+                V[i][j] = VI ;
+                P[i][j] = PI ;
+            }
+        }
+    }
+
+    for ( i = il ; i<= ir;  i++ )
+    {
+        for (j = jb; j<= jt; j++ )
+        {
+            RS[i][j]=0;
+        }
+    }
+
+    
+    
+    
     
     /* initialize current time and time step*/
     t = 0;
@@ -139,10 +177,16 @@ int main(int argc, char** argv){
     /* create the initial setup init_uvp()*/
     init_uvp(UI, VI, PI,  il, ir, jb, jt, U, V, P);
     
-    if (myrank==0){
-    write_matrix("matrix.dat",U,il,ir+1,jb,jt+1,xlength,ylength,1,0);
-    write_matrix("matrix.dat",V,il,ir+1,jb,jt+1,xlength,ylength,0,0);
+/*    strcpy(filen, "matrix");
+    itoa(myrank,rank,2);
+    strcat(filen,rank);
+    strcat(filen, ".dat");
+*/
+
+/*    if (myrank==2){
+     write_matrix("matrix2.dat",U,il,ir+1,jb,jt+1,xlength,ylength,1,0);
     }
+*/
     
     
     /* ----------------------------------------------------------------------- */
@@ -175,22 +219,18 @@ int main(int argc, char** argv){
         
         n_div=(dt_value/dt);
         if (n % n_div == 0) {
-            output_uvp( U, V, P, il, ir, jb, jt, omg_i, omg_j,"cavity",n,dx,dy, myrank,imax,jmax);
+           output_uvp( U, V, P, il, ir, jb, jt, omg_i, omg_j,"cavity",n,dx,dy, myrank,imax,jmax);
         }
         
         t = t + dt;
         n++;
     }
-    
-    
-    
-    if (myrank==0){
-        write_matrix("matrix.dat",U,il,ir+1,jb,jt+1,xlength,ylength,0,0);
-        
-        write_matrix("matrix.dat",V,il,ir+1,jb,jt+1,xlength,ylength,0,0);
+    /*
+    if (myrank==5){
+
+        write_matrix("matrix5.dat",U,il,ir+1,jb,jt+1,xlength,ylength,1,0);
     }
-    
-    
+    */
     
     free(bufSend);
     free(bufRecv);

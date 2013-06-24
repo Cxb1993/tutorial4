@@ -44,8 +44,8 @@ void sor(
     
     
     
-    for(j = jb+1; j <= jt; j++) {
-        for(i = il+1; i<=ir; i++) {
+    for(j = jb; j <= jt; j++) {
+        for(i = il; i<=ir; i++) {
             P[i][j] = (1.0-omg)*P[i][j]
             + coeff*(( P[i+1][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]+P[i][j-1])/(dy*dy) - RS[i][j]);
         }
@@ -55,26 +55,26 @@ void sor(
     
     if(omg_i==1){
         for (j = jb; j <= jt+1; j++){
-            /*U values around left boundary*/
-            P[il][j] = P[il+1][j];
+            /*P values around left boundary*/
+            P[il-1][j] = P[il][j];
         }
     }
     if(omg_i==iproc){
         for (j = jb; j <= jt+1; j++){
-            /*U values around left boundary*/
+            /*P values around right boundary*/
             P[ir+1][j] = P[ir][j];
         }
     }
     
     if(omg_j==1){
         for (i = il; i <= ir+1; i++){
-            /*U values around left boundary*/
-            P[i][jb] = P[i][jb+1];
+            /*P values around bottom boundary*/
+            P[i][jb-1] = P[i][jb];
         }
     }
     if(omg_j==jproc){
         for (i = il; i <= ir+1; i++){
-            /*U values around left boundary*/
+            /*P values around top boundary*/
             P[i][jt+1] = P[i][jt];
         }
     }
@@ -84,8 +84,8 @@ void sor(
         
     /* compute the residual */
     rloc = 0;
-    for(j = jb+1; j <= jt; j++) {
-        for(i = il+1; i <= ir; i++) {
+    for(j = jb; j <= jt; j++) {
+        for(i = il; i <= ir; i++) {
             rloc += ( (P[i+1][j]-2.0*P[i][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]-2.0*P[i][j]+P[i][j-1])/(dy*dy) - RS[i][j])*
             ( (P[i+1][j]-2.0*P[i][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]-2.0*P[i][j]+P[i][j-1])/(dy*dy) - RS[i][j]);
         }

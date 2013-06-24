@@ -95,7 +95,9 @@ void write_vtkPointCoordinates(
                                double dx,
                                double dy,
                                int imax,
-                               int jmax
+                               int jmax,
+                               int omg_i,
+                               int omg_j
                                );
 
 #endif
