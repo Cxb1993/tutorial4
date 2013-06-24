@@ -32,7 +32,8 @@ void init_parallel(
                    int *rank_t,
                    int *omg_i,
                    int *omg_j,
-                   int num_proc);
+                   int num_proc
+);
 
 void pressure_comm(
                    double **P,
@@ -46,7 +47,6 @@ void pressure_comm(
                    int rank_t,
                    double *bufSend,
                    double *bufRecv,
-                   MPI_Status *status,
                    int chunk);
 
 
@@ -63,5 +63,4 @@ void uv_comm(
              int rank_t,
              double *bufSend,
              double *bufRecv,
-             MPI_Status *status,
              int chunk );

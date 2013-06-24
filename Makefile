@@ -1,5 +1,5 @@
 CC = mpicc
-CFLAGS = -Wall -pedantic
+CFLAGS = -Wall 
 
 SRC_SIM 	= 	helper 		\
   		    	init 		\

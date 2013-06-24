@@ -17,7 +17,6 @@ void sor(
          int rank_t,
          double *bufSend,
          double *bufRecv,
-         MPI_Status *status,
          int chunk,
          double **P,
          double **RS,
@@ -80,7 +79,7 @@ void sor(
     }
     
     /*Passing the pressure values*/
-    pressure_comm(P,il,ir,jb,jt ,rank_l,rank_r,rank_b,rank_t,bufSend,bufRecv,status,chunk);
+    pressure_comm(P,il,ir,jb,jt ,rank_l,rank_r,rank_b,rank_t,bufSend,bufRecv,chunk);
         
     /* compute the residual */
     rloc = 0;

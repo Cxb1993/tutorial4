@@ -102,9 +102,6 @@ int main(int argc, char** argv){
     int chunk;
     MPI_Status *status;
     int a,b ;
-    int i,j;
-    char filen[100];
-    char rank[5];
     
     MPI_Init( &argc, &argv );                    /* execute n processes      */
     MPI_Comm_size( MPI_COMM_WORLD, &num_proc);     /* asking for the number of processes  */
@@ -124,7 +121,7 @@ int main(int argc, char** argv){
     
     bufSend = (double *)  malloc(( chunk * sizeof( double )));
     bufRecv = (double *)  malloc(( chunk * sizeof( double )));
-    
+  
     /* set up the matrices (arrays) needed using the matrix() command*/
     U = matrix(il-2, ir+1, jb-1, jt+1);
     V = matrix(il-1, ir+1, jb-2, jt+1);
@@ -132,40 +129,6 @@ int main(int argc, char** argv){
     RS = matrix(il, ir, jb, jt);
     F = matrix(il-2, ir+1, jb-1, jt+1);
     G = matrix(il-1, ir+1, jb-2, jt+1);
-    
-    for ( i = 0 ; i<= chunk;  i++ )
-    {
-        bufSend[i] = 0;
-    }
-    
-    for ( i = il-2 ; i<= ir+1;  i++ )
-    {
-        for (j = jb-2; j<= jt+1; j++ )
-        {
-            if (i == il-2) {
-                U[i][j] = UI ;
-                F[i][j] = 0;
-            }
-            else if (j == jb-2){
-                V[i][j] = VI ;
-                G[i][j] = 0;
-            }
-            else{
-                U[i][j] = UI ;
-                V[i][j] = VI ;
-                P[i][j] = PI ;
-            }
-        }
-    }
-
-    for ( i = il ; i<= ir;  i++ )
-    {
-        for (j = jb; j<= jt; j++ )
-        {
-            RS[i][j]=0;
-        }
-    }
-
     
     
     
@@ -177,17 +140,7 @@ int main(int argc, char** argv){
     /* create the initial setup init_uvp()*/
     init_uvp(UI, VI, PI,  il, ir, jb, jt, U, V, P);
     
-/*    strcpy(filen, "matrix");
-    itoa(myrank,rank,2);
-    strcat(filen,rank);
-    strcat(filen, ".dat");
-*/
-
-/*    if (myrank==2){
-     write_matrix("matrix2.dat",U,il,ir+1,jb,jt+1,xlength,ylength,1,0);
-    }
-*/
-    
+  
     
     /* ----------------------------------------------------------------------- */
     /*                             Performing the main loop                    */
@@ -204,7 +157,7 @@ int main(int argc, char** argv){
         it = 0;
         
         while(it < itermax && res > eps){
-            sor( omg, dx, dy, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, bufSend, bufRecv, status, chunk , P, RS, myrank, imax, jmax,&res,omg_i,omg_j,iproc,jproc);
+            sor( omg, dx, dy, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, bufSend, bufRecv, chunk , P, RS, myrank, imax, jmax,&res,omg_i,omg_j,iproc,jproc);
             if (myrank==0){
 /*                printf("residual=%f\n",res);*/
             }
@@ -215,7 +168,7 @@ int main(int argc, char** argv){
         
         calculate_uv(dt, dx, dy, il, ir, jb, jt, U, V, F, G, P);
         
-        uv_comm(U,V,il,ir,jb,jt,rank_l,rank_r,rank_b,rank_t,bufSend, bufRecv, status, chunk);
+        uv_comm(U,V,il,ir,jb,jt,rank_l,rank_r,rank_b,rank_t,bufSend, bufRecv, chunk);
         
         n_div=(dt_value/dt);
         if (n % n_div == 0) {
@@ -225,23 +178,19 @@ int main(int argc, char** argv){
         t = t + dt;
         n++;
     }
-    /*
-    if (myrank==5){
 
-        write_matrix("matrix5.dat",U,il,ir+1,jb,jt+1,xlength,ylength,1,0);
-    }
-    */
-    
+    Programm_Sync("Syncing processes!\n");
     free(bufSend);
     free(bufRecv);
-    /* Destroy memory allocated*/
-    free_matrix(U, il-2, ir+1, jb-1, jt+1);
+    
+ 
+/* Destroy memory allocated*/
     free_matrix(V, il-1, ir+1, jb-2, jt+1);
     free_matrix(P, il-1, ir+1, jb-1, jt+1);
+    free_matrix(U, il-2, ir+1, jb-1, jt+1);
     free_matrix(RS, il, ir, jb, jt);
     free_matrix(F, il-2, ir+1, jb-1, jt+1);
-    free_matrix(G, il-1, ir+1, jb-2, jt+1);
+    free_matrix(G, il-1, ir+1, jb-2, jt+1);    
     Programm_Stop("finished its work");
-    
     return 0;
 }

@@ -128,18 +128,18 @@ void init_uvp(
 {
     int i;
     int j;
-    
+
     for ( i = il-2 ; i<= ir+1;  i++ )
     {
         for (j = jb-2; j<= jt+1; j++ )
         {
-            if (i == il-2) {
+            if (j != jb-2) {
                 U[i][j] = UI ;
             }
-            else if (j == jb-2){
+            else if (i != il-2){
                 V[i][j] = VI ;
             }
-            else{
+            else if ((i != il-2)&&(j != jb-2)){
                 U[i][j] = UI ;
                 V[i][j] = VI ;
                 P[i][j] = PI ;

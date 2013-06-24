@@ -24,7 +24,6 @@ void sor(
          int rank_t,
          double *bufSend,
          double *bufRecv,
-         MPI_Status *status,
          int chunk,
          double **P,
          double **RS,
