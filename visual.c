@@ -1,4 +1,3 @@
-#include <mpi.h>
 #include "helper.h"
 #include "visual.h"
 #include <stdio.h>
@@ -36,17 +35,12 @@ void output_uvp(
     }
     
     write_vtkHeader( fp, il, ir, jb, jt, dx, dy,imax,jmax);
-    write_vtkPointCoordinates(fp, il, ir, jb, jt, dx, dy,imax,jmax,omg_i,omg_j);
+    write_vtkPointCoordinates(fp, il, ir, jb, jt, dx, dy,imax,jmax);
     
-    fprintf(fp,"POINT_DATA %i \n", (ir-(il)+1)*(jt-(jb)+1) );
+    fprintf(fp,"POINT_DATA %i \n", (ir-il+1)*(jt-jb+1) );
 	
     fprintf(fp,"\n");
     fprintf(fp, "VECTORS velocity float\n");
-    
-    /*for( j = nch; j >= ncl; j--){
-		for( i = nrl; i <= nrh; i++){
-    */
-    
     for(j = jb; j <= jt; j++) {
         for(i = il; i <= ir; i++) {
             fprintf(fp, "%f %f 0\n", (U[i][j] + U[i][j+1]) * 0.5, (V[i][j] + V[i+1][j]) * 0.5 );
@@ -95,8 +89,8 @@ void write_vtkHeader(
     fprintf(fp,"ASCII\n");
     fprintf(fp,"\n");
     fprintf(fp,"DATASET STRUCTURED_GRID\n");
-    fprintf(fp,"DIMENSIONS  %i %i 1 \n", ir-(il)+1, jt-(jb)+1);
-    fprintf(fp,"POINTS %i float\n", (ir-(il)+1)*(jt-(jb)+1) );
+    fprintf(fp,"DIMENSIONS  %i %i 1 \n", ir-il+1, jt-jb+1);
+    fprintf(fp,"POINTS %i float\n", (ir-il+1)*(jt-jb+1) );
     fprintf(fp,"\n");
 }
 
@@ -110,18 +104,9 @@ void write_vtkPointCoordinates(
                                double dx,
                                double dy,
                                int imax,
-                               int jmax,
-                               int omg_i,
-                               int omg_j
-                               ) {
-    double originX;
-    double originY;
-	int myrank;
-	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
-    
-    
-    originX = (il)*dx-(omg_i-1)*dx;
-    originY = (jb)*dy-(omg_j-1)*dy;
+                               int jmax) {
+    double originX = il*dx;
+    double originY = jb*dy;
     
     int i = 0;
     int j = 0;

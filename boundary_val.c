@@ -21,15 +21,15 @@ void boundaryvalues(
     int i,j;
     
     /*Set boundary values along the columns*/
-    for (j = jb-1; j <= jt+1; j++){
+    for (j = jb; j <= jt; j++){
         
         if ( (il) == 0 ){
             /*U velocities on left boundary*/
             U[il-1][j] = 0;
             /*V velocities on left boundary (interpolated value)*/
-            V[il-1][j]=-1*V[il][j];
+            V[il][j]=-1*V[il+1][j];
         }
-        if( ir + 1 == imax){
+        if( ir == imax){
             /*U velocities on right boundary*/
             U[ir][j] = 0;
             /*V velocities on right boundary (interpolated value)*/
@@ -38,16 +38,16 @@ void boundaryvalues(
     }
     
     /*Set boundary values along the rows*/
-    for (i = il-1; i <= ir+1; i++){
+    for (i = il; i <= ir; i++){
 
         if ( (jb) == 0 ){
             /*V velocities on bottom boundary*/
-            V[i][jb-1] = 0;
+            V[i][jb] = 0;
             /*U velocities on bottom boundary (interpolated value)*/
-            U[i][jb-1]=-1*U[i][jb];
+            U[i][jb]=-1*U[i][jb+1];
             
         }
-        if( jt + 1 == jmax){
+        if( jt == jmax){
             /*V velocities on top boundary*/
             V[i][jt] = 0;
             /*U velocities on top boundary (interpolated value)*/

@@ -105,25 +105,25 @@ void calculate_fg(
     }
     
     /*Set boundary values along the columns*/
-    for (j = jb-1; j <= jt+1; j++){
+    for (j = jb; j <= jt; j++){
         
         if ( (il) == 0 ){
             /*F values on left boundary*/
-            F[il-1][j] = U[il-1][j];
+            F[il][j] = U[il][j];
         }
-        if( ir + 1 == imax){
+        if( ir == imax){
             /*F values on right boundary*/
             F[ir][j] = U[ir][j];
         }
     }
     
     /*Set boundary values along the rows*/
-    for (i = il-1; i <= ir+1; i++){
+    for (i = il; i <= ir; i++){
         if ( (jb) == 0 ){
             /*G values on bottom boundary*/
-            G[i][jb-1] = V[i][jb-1];
+            G[i][jb] = V[i][jb];
         }
-        if( jt + 1 == jmax){
+        if( jt == jmax){
             /*G values on top boundary*/
             G[i][jt] = V[i][jt];
         }
