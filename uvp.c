@@ -235,7 +235,7 @@ void calculate_dt(
                 *dt = tau * c;
             }
         }
-        for (k = 0; k < num_proc; ++k) {
+        for (k = 1; k < num_proc; ++k) {
             
             MPI_Send(dt, 1, MPI_DOUBLE, k, 1, MPI_COMM_WORLD);
             
