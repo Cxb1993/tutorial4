@@ -81,19 +81,19 @@ void init_parallel(
 		*omg_j=1;
 		if( *omg_i <= res_i ){
 			*il = (quot_i+1) * ((*omg_i)-1);
-			*ir = (quot_i+1) * (*omg_i);
+			*ir = (quot_i+1) * (*omg_i)-1;
 		}
 		else{
 			*il = ((quot_i+1) * res_i)+((*omg_i-res_i-1)*quot_i);
-			*ir = ((quot_i+1) * res_i)+((*omg_i-res_i)*quot_i);
+			*ir = ((quot_i+1) * res_i)+((*omg_i-res_i)*quot_i)-1;
 		}
 		if( *omg_j <= res_j ){
 			*jb = (quot_j+1) * ((*omg_j)-1);
-			*jt = (quot_j+1) * (*omg_j);
+			*jt = (quot_j+1) * (*omg_j)-1;
 		}
 		else{
 			*jb = ((quot_j+1) * res_j)+((*omg_j-res_j-1)*quot_j);
-			*jt = ((quot_j+1) * res_j)+((*omg_j-res_j)*quot_j);
+			*jt = ((quot_j+1) * res_j)+((*omg_j-res_j)*quot_j)-1;
 		}
         
 		*rank_l = MPI_PROC_NULL ;
@@ -119,19 +119,19 @@ void init_parallel(
 
             if( t_omg_i <= res_i ){
                 t_il = (quot_i+1) * ((t_omg_i)-1);
-                t_ir = (quot_i+1) * (t_omg_i);
+                t_ir = (quot_i+1) * (t_omg_i)-1;
             }
             else{
                 t_il = ((quot_i+1) * res_i)+((t_omg_i-res_i-1)*quot_i);
-                t_ir = ((quot_i+1) * res_i)+((t_omg_i-res_i)*quot_i);
+                t_ir = ((quot_i+1) * res_i)+((t_omg_i-res_i)*quot_i)-1;
             }
             if( t_omg_j <= res_j ){
                 t_jb = (quot_j+1) * ((t_omg_j)-1);
-                t_jt = (quot_j+1) * (t_omg_j);
+                t_jt = (quot_j+1) * (t_omg_j)-1;
             }
             else{
                 t_jb = ((quot_j+1) * res_j)+((t_omg_j-res_j-1)*quot_j);
-                t_jt = ((quot_j+1) * res_j)+((t_omg_j-res_j)*quot_j);
+                t_jt = ((quot_j+1) * res_j)+((t_omg_j-res_j)*quot_j)-1;
             }
             
             
