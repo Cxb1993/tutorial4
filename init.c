@@ -133,16 +133,16 @@ void init_uvp(
     {
         for (j = jb-2; j<= jt+1; j++ )
         {
-            if (j != jb-2) {
-                U[i][j] = UI ;
-            }
-            else if (i != il-2){
-                V[i][j] = VI ;
-            }
-            else if ((i != il-2)&&(j != jb-2)){
+            if ( (i != il-2)&&(j != jb-2) ) {
                 U[i][j] = UI ;
                 V[i][j] = VI ;
                 P[i][j] = PI ;
+            }
+            else if (i == il-2){
+                U[i][j] = UI ;
+            }
+            else if (j == jb-2){
+                V[i][j] = VI ;
             }
         }
     }

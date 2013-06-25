@@ -62,7 +62,7 @@ void init_parallel(
                    int *omg_i,
                    int *omg_j,
                    int num_proc
-)
+                   )
 {
     
 	int i ;
@@ -99,13 +99,13 @@ void init_parallel(
         
 		*rank_l = MPI_PROC_NULL ;
         if(iproc>1){
-		*rank_r = *myrank + 1 ;
+            *rank_r = *myrank + 1 ;
         }
         else{
-        *rank_r = MPI_PROC_NULL ;
+            *rank_r = MPI_PROC_NULL ;
         }
 		if(jproc>1){
-        *rank_t = *myrank + iproc;
+            *rank_t = *myrank + iproc;
         }
         else{
             *rank_t = MPI_PROC_NULL ;
@@ -117,7 +117,7 @@ void init_parallel(
 			t_omg_i= (i%iproc) + 1;
 			t_omg_j = (i/iproc) + 1;
 			
-
+            
             if( t_omg_i <= res_i ){
                 t_il = (quot_i+1) * ((t_omg_i)-1);
                 t_ir = (quot_i+1) * (t_omg_i)-1;
@@ -135,33 +135,44 @@ void init_parallel(
                 t_jt = ((quot_j+1) * res_j)+((t_omg_j-res_j)*quot_j)-1;
             }
             
-            
-            if (t_omg_i == 1){
+            if (iproc==1){
                 t_rank_l = MPI_PROC_NULL ;
-                t_rank_r = i + 1 ;
-            }
-            else if (t_omg_i == iproc ) {
-                
-                t_rank_r =  MPI_PROC_NULL ;
-                t_rank_l = i - 1 ;
+                t_rank_r = MPI_PROC_NULL ;
             }
             else {
-                t_rank_r = i + 1 ;
-                t_rank_l = i - 1 ;
-			}
-            
-            if (t_omg_j == 1){
-                t_rank_b = MPI_PROC_NULL ;
-                t_rank_t = i + iproc;
+                if (t_omg_i == 1){
+                    t_rank_l = MPI_PROC_NULL ;
+                    t_rank_r = i + 1 ;
+                }
+                else if (t_omg_i == iproc ) {
+                    
+                    t_rank_r =  MPI_PROC_NULL ;
+                    t_rank_l = i - 1 ;
+                }
+                else {
+                    t_rank_r = i + 1 ;
+                    t_rank_l = i - 1 ;
+                }
             }
-            else if (t_omg_j == jproc){
-                t_rank_t =  MPI_PROC_NULL ;
-                t_rank_b = i - iproc;
+            
+            if (jproc==1){
+                t_rank_b = MPI_PROC_NULL ;
+                t_rank_t = MPI_PROC_NULL ;
             }
             else{
-                t_rank_t = i + iproc;
-                t_rank_b = i - iproc;
-			}
+                if (t_omg_j == 1){
+                    t_rank_b = MPI_PROC_NULL ;
+                    t_rank_t = i + iproc;
+                }
+                else if (t_omg_j == jproc){
+                    t_rank_t =  MPI_PROC_NULL ;
+                    t_rank_b = i - iproc;
+                }
+                else{
+                    t_rank_t = i + iproc;
+                    t_rank_b = i - iproc;
+                }
+            }
             
             
 			MPI_Send(&t_omg_i, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
@@ -191,7 +202,7 @@ void init_parallel(
     MPI_Barrier(MPI_COMM_WORLD);
     printf("myrank=%i omg_i=%i omg_j=%i rank_l=%i rank_r=%i  rank_b=%i rank_t=%i\n" ,*myrank,*omg_i, *omg_j, *rank_l, *rank_r, *rank_b, *rank_t ) ;
     printf("myrank=%i omg_i=%i omg_j=%i il=%i ir=%i  jb=%i jt=%i imax=%i jmax=%i\n" ,*myrank,*omg_i, *omg_j, *il, *ir, *jb, *jt,imax,jmax ) ;
-
+    
 }
 
 void pressure_comm(
@@ -214,9 +225,9 @@ void pressure_comm(
 	MPI_Status status;
     
 	for (i = 0; i < chunk; ++i) {
-			bufSend[i] = 0;
-			bufRecv[i] = 0;
-		}
+        bufSend[i] = 0;
+        bufRecv[i] = 0;
+    }
 	/************************************************/
 	/*  send to the left  -  receive form the right */
 	/************************************************/
@@ -299,12 +310,12 @@ void uv_comm(
              double *bufRecv,
              int chunk )
 {
- 	MPI_Status status;   
+ 	MPI_Status status;
 	int i,j ;
-         	for (i = 0; i < chunk; ++i) {
-			bufSend[i] = 0;
-			bufRecv[i] = 0;
-		}
+    for (i = 0; i < chunk; ++i) {
+        bufSend[i] = 0;
+        bufRecv[i] = 0;
+    }
 	/************************************************/
 	/*  send to the left  -  receive form the right */
 	/************************************************/
