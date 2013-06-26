@@ -138,10 +138,10 @@ void init_uvp(
                 V[i][j] = VI ;
                 P[i][j] = PI ;
             }
-            else if (i == il-2){
+            else if (j != jb-2){
                 U[i][j] = UI ;
             }
-            else if (j == jb-2){
+            else if (i != il-2){
                 V[i][j] = VI ;
             }
         }

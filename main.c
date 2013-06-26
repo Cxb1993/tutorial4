@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 #include <string.h>
+#include <time.h>
 /* CFD Lab - Worksheet 4 - Group 3
  * Camacho Barranco, Roberto
  * Gavranovic, Stefan
@@ -102,6 +103,7 @@ int main(int argc, char** argv){
     int chunk;
     MPI_Status *status;
     int a,b ;
+    double start_time, end_time;
     
     MPI_Init( &argc, &argv );                    /* execute n processes      */
     MPI_Comm_size( MPI_COMM_WORLD, &num_proc);     /* asking for the number of processes  */
@@ -110,6 +112,10 @@ int main(int argc, char** argv){
     read_parameters("cavity100.dat", &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, &iproc, &jproc);
     
     init_parallel(iproc, jproc, imax, jmax, &myrank, &il, &ir, &jb, &jt, &rank_l, &rank_r, &rank_b, &rank_t, &omg_i, &omg_j, num_proc);
+    
+    if (myrank==0){
+        start_time = MPI_Wtime();
+    }
     
     /*calculating max for chunk size*/
     
@@ -171,10 +177,11 @@ int main(int argc, char** argv){
         uv_comm(U,V,il,ir,jb,jt,rank_l,rank_r,rank_b,rank_t,bufSend, bufRecv, chunk);
         
         n_div=(dt_value/dt);
-        if (n % n_div == 0) {
+        /*
+         if (n % n_div == 0) {
            output_uvp( U, V, P, il, ir, jb, jt, omg_i, omg_j,"cavity",n,dx,dy, myrank,imax,jmax);
         }
-        
+        */
         t = t + dt;
         n++;
     }
@@ -190,7 +197,14 @@ int main(int argc, char** argv){
     free_matrix(U, il-2, ir+1, jb-1, jt+1);
     free_matrix(RS, il, ir, jb, jt);
     free_matrix(F, il-2, ir+1, jb-1, jt+1);
-    free_matrix(G, il-1, ir+1, jb-2, jt+1);    
+    free_matrix(G, il-1, ir+1, jb-2, jt+1);
+
+    if (myrank==0){
+        end_time = MPI_Wtime();
+    }
+    
+    printf("execution time = %f\n",end_time-start_time);
     Programm_Stop("finished its work");
-    return 0;
+
+    return -1;
 }
