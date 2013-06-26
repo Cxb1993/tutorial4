@@ -332,7 +332,8 @@ void uv_comm(
 	if(rank_r!=MPI_PROC_NULL){
 		for (j = jb-1; j <= jt+1; ++j) {
 			U[ir+1][j] = bufRecv[j-jb + 1] ;
-		}}
+		}
+    }
     
 	/* Calculations for V */
 	if(rank_l!=MPI_PROC_NULL){

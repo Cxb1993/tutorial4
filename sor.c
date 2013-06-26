@@ -37,8 +37,6 @@ void sor(
     double glob_res;
     
     
-    
-    
     /* SOR iteration */
     
     

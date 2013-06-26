@@ -113,7 +113,7 @@ int main(int argc, char** argv){
     
     /*calculating max for chunk size*/
     
-    a = jb - jt + 4 ;
+    a = jt - jb + 4 ;
     b = ir - il + 4 ;
     
     if (a>b) chunk = a;
